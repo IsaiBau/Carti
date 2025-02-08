@@ -1,0 +1,7 @@
+# Ignorar node_modules en ambos proyectos
+frontend/node_modules/
+backend/node_modules/
+
+# Ignorar archivos generados por Vite
+frontend/dist/
+frontend/.vite/
