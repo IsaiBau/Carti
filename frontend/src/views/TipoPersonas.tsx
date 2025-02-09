@@ -1,15 +1,24 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import axios from "axios";
+import InputSelect from "../components/BooleanInputSelect";
+import Input from "../components/Input";
+import ButtonDelete from "../components/ButtonDelete";
+import { FaRegAddressCard } from 'react-icons/fa6';
 
 const Personas: React.FC = () => {
   const [msg, setMsg] = useState("");
   const [tipoPersonasSelect, setTipoPersonas] = useState<any[]>([]);
   const [editar, setEditar] = useState(false);
-  const [id, setId] = useState<string | null>(null);
+  const [uuid, setUuid] = useState<string | null>(null);
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [activo, setActivo] = useState<string>("");
+  const [activo, setActivo] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const booleanOptions = [
+    { value: true, label: "Activo" },
+    { value: false, label: "Inactivo" }
+  ];
 
   useEffect(() => {
     getTipoPersonas();
@@ -43,33 +52,37 @@ const Personas: React.FC = () => {
   const cancelar = () => {
     setNombre("");
     setDescripcion("");
-    setActivo("");
-    setId(null);
+    setActivo(true);
+    setUuid(null);
     setEditar(false);
   };
 
-  const deleteTipoPersona = async (uuid: string) => {
+  const deleteTipoPersona = async (toggleModal: () => void, row: { uuid: string;}) => {
     try {
-      await axios.delete(`http://localhost:5000/tipo-personas/${uuid}`);
+      await axios.delete(`http://localhost:5000/tipo-personas/${row.uuid}`);
       getTipoPersonas();
-      cancelar();
+      toggleModal(); 
     } catch (error: any) {
-      setMsg(error.response.data.msg);
+      if (error.response && error.response.data && error.response.data.msg) {
+        setMsg(error.response.data.msg);
+      } else {
+        setMsg("Error al eliminar el tipo de persona.");
+      }
     }
-  };
+  };  
 
   const getTipoPersonaEdit = (row: any) => {
     setEditar(true);
-    setId(row.uuid);
+    setUuid(row.uuid);
     setNombre(row.nombre);
     setDescripcion(row.descripcion);
     setActivo(row.activo);
   };
 
   const updateTipoPersona = async () => {
-    if (!id) return;
+    if (!uuid) return;
     try {
-      await axios.patch(`http://localhost:5000/tipo-personas/${id}`, { nombre, descripcion, activo });
+      await axios.patch(`http://localhost:5000/tipo-personas/${uuid}`, { nombre, descripcion, activo });
       getTipoPersonas();
       cancelar();
     } catch (error: any) {
@@ -77,131 +90,149 @@ const Personas: React.FC = () => {
     }
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setNombre(value);
+  const handleChange  = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
 
-    // Validación dinámica mientras se escribe
-    if (value.length >= 3) {
-      setErrorMsg("");
-    } else {
-      setErrorMsg("El nombre del tipo de persona debe tener al menos 3 caracteres.");
+    switch (name) {
+      case "nombre":
+        setNombre(value);
+        break;
+      case "descripcion":
+        setDescripcion(value);
+        break;
+      case "activo":
+        setActivo(value === 'true');
+        break;
+      default:
+        break;
     }
+
+    let errorMessage = "";
+
+    switch (name) {
+      case "nombre":
+        if (value.length < 3) {
+          errorMessage = "El nombre debe tener al menos 3 caracteres.";
+        }
+        break;
+      case "descripcion":
+        if (value.length < 3) {
+          errorMessage = "La descripción debe tener al menos 3 caracteres.";
+        }
+        break;
+      default:
+        break;
+    }
+
+    setErrorMsg(errorMessage);
   };
 
-  const modalContent = (
-    <form>
-      <div>
-        <label
-          htmlFor="nombre"
-          className="block mb-2 text-sm font-medium text-gray-900"
-        >
-          Nombre del tipo de persona
-        </label>
-        <input
-          value={nombre}
-          onChange={handleChange}
-          type="text"
-          name="nombre"
-          id="nombre"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-          placeholder="Nombre del tipo de persona"
-          required
-        />
-      </div>
-      {errorMsg && (
-        <p
-          className="p-4 my-4 text-sm text-red-800 rounded-lg bg-red-50"
-          role="alert"
-        >
-          {errorMsg}
-        </p>
-      )}
-    </form>
+  const alertDelete = (row: { nombre: string }) => (
+    <div className="text-center">
+      <p className="text-gray-900 text-lg">
+        ¿Está seguro de eliminar: <strong>{row.nombre}</strong>?
+      </p>
+    </div>
   );
 
-  const alertDelete = (row: any) => (
-    <form>
-      <div className="">
-        <div className="col-span-1 sm:col-span-1 mb-4">
-          <i className="bx bxs-error bx-flashing text-red-800 bx-lg flex justify-center text-center"></i>
-          <label
-            htmlFor="tipo_persona"
-            className="mt-2 text-sm font-medium text-gray-900 flex justify-center text-center"
-          >
-            ¿Está seguro de eliminar:
-            <strong className="pl-2"> {row.nombre}</strong>?
-          </label>
-        </div>
-      </div>
-    </form>
-  );
-
-  const footerButtons = () => (
+  const footerButtonsDelete = (toggleModal: () => void, row: { uuid: string }) => (
     <>
       <button
         type="button"
         className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-        onClick={cancelar}
-      >
-        Cancelar
-      </button>
-      <button
-        type="button"
-        className="button-actions text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ml-2"
-        onClick={addTipoPersonas}
-      >
-        Agregar
-      </button>
-    </>
-  );
-
-  const footerButtonsUpdate = () => (
-    <>
-      <button
-        type="button"
-        className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-        onClick={cancelar}
+        onClick={toggleModal}
       >
         Cancelar
       </button>
       <button
         type="submit"
         className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-2"
-        onClick={updateTipoPersona}
-      >
-        Editar
-      </button>
-    </>
-  );
-
-  const footerButtonsDelete = (row: any) => (
-    <>
-      <button
-        type="button"
-        className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-        onClick={cancelar}
-      >
-        Cancelar
-      </button>
-      <button
-        type="submit"
-        className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-2"
-        onClick={() => deleteTipoPersona(row.uuid)}
+        onClick={() => deleteTipoPersona(toggleModal, row)}
       >
         Eliminar
       </button>
     </>
   );
-
+  
   return (
-    <div>
+    <div className="m-20">
       <h1>Todas las Tipos de Personas</h1>
-      <button onClick={addTipoPersonas}>Agregar tipo de persona</button>
+      <form>
+        <div>
+          <label htmlFor="nombre" className="block mb-2 text-sm font-medium text-gray-900">
+            Nombre del tipo de persona
+          </label>
+          <Input 
+            placeholder='Nombre del tipo de persona' 
+            icon={FaRegAddressCard}
+            value={nombre}
+            onChange={handleChange}
+            id={"nombre"}
+            name={"nombre"}
+          />
+        </div>
+        <div>
+          <label htmlFor="descripcion" className="block mb-2 text-sm font-medium text-gray-900">
+            Descripción
+          </label>
+          <Input 
+            placeholder='Descripción del tipo de persona' 
+            icon={FaRegAddressCard}
+            value={descripcion}
+            onChange={handleChange}
+            id={"descripcion"}
+            name={"descripcion"}
+          />
+        </div>
+        <div>
+          <label htmlFor="activo" className="block mb-2 text-sm font-medium text-gray-900">
+            Activo
+          </label>
+          <InputSelect 
+            options={booleanOptions}
+            value={activo}
+            onChange={handleChange}
+            name="activo"
+            id="activo"
+          />
+        </div>
+        {errorMsg && (
+          <p className="p-4 my-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+            {errorMsg}
+          </p>
+        )}
+        <div>
+          <button
+            type="button"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2"
+            onClick={addTipoPersonas}
+          >
+            Agregar
+          </button>
+          {editar && (
+            <button
+              type="button"
+              className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-2"
+              onClick={updateTipoPersona}
+            >
+              Editar
+            </button>
+          )}
+          <button
+            type="button"
+            className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            onClick={cancelar}
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
       <table>
         <thead>
           <tr>
             <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Activo</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -209,9 +240,16 @@ const Personas: React.FC = () => {
           {tipoPersonasSelect.map((row) => (
             <tr key={row.uuid}>
               <td>{row.nombre}</td>
+              <td>{row.descripcion}</td>
+              <td>{row.activo ? "Activo" : "Inactivo"}</td>
               <td>
-                {footerButtonsUpdate()}
-                {footerButtonsDelete(row)}
+                <button onClick={() => getTipoPersonaEdit(row)}>Editar</button>
+                <ButtonDelete
+                  title="Confirmar eliminación"
+                  footerButtons={(toggleModal) => footerButtonsDelete(toggleModal, row)}
+                >
+                  {alertDelete(row)}
+                </ButtonDelete>
               </td>
             </tr>
           ))}

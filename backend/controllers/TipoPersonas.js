@@ -8,7 +8,7 @@ export const getTipoPersonas = async(req, res) => {
             attributes:['uuid','nombre', 'descripcion', 'activo'],
         });
         res.status(200).json(response);
-        console.log(response)
+        //console.log(response) esto es para testear y mostrar en la consola
     } catch (error) {
         res.status(500).json(error);
     }
@@ -70,14 +70,14 @@ export const updateTipoPersonas = async (req, res) => {
         if(req.role === "Administrador" || req.role === "Conductor"){
             await TipoPersonas.update({nombre,descripcion,activo},{
                 where:{
-                    id: tp.id
+                    id_tipo_persona: tp.id_tipo_persona
                 }
             });
         } else {
-            if(req.userId !== tp.userId) return res.status(403).json({msg: "Acceso prohibido"});
+            /*if(req.userId !== tp.userId) return res.status(403).json({msg: "Acceso prohibido"});*/
             await TipoPersonas.update({nombre,descripcion,activo},{
                 where:{
-                    [Op.and]:[{id: tp.id}]
+                    id_tipo_persona: tp.id_tipo_persona
                 },
             });
         }
@@ -95,20 +95,14 @@ export const deleteTipoPersonas = async(req, res) => {
             }
         });
         if(!tp) return res.status(404).json({msg: "No se encontró el tipo de persona"});
-        if(req.role === "Pasajero" || req.role === "Conductor"){
-            await TipoPersonas.destroy({
-                where:{
-                    id: tp.id
-                }
-            });
-        } else {
-            if(req.userId !== tp.userId) return res.status(403).json({msg: "Acceso prohibido"});
-            await TipoPersonas.destroy({
-                where:{
-                    [Op.and]:[{id: tp.id}]
-                },
-            });
-        }
+        
+        // Eliminación sin considerar roles
+        await TipoPersonas.destroy({
+            where:{
+                uuid: req.params.id
+            }
+        });
+
         res.status(200).json({msg: "Tipo de persona eliminada con éxito!"});
     } catch (error) {
         res.status(500).json({msg: error.message});
