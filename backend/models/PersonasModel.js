@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import db from '../config/Database.js';
-import TipoPersonas from './TipoPersonasModel.js';
 
 const Personas = db.define('personas', {
     id: {
@@ -8,7 +7,7 @@ const Personas = db.define('personas', {
       primaryKey: true,
       autoIncrement: true,
     },
-    uuid:{
+    uuid: {
       type: DataTypes.STRING,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
@@ -21,14 +20,16 @@ const Personas = db.define('personas', {
       allowNull: false,
     },
     nombre: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       allowNull: false,
     },
     apellido_pat: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     apellido_mat: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     sexo: {
       type: DataTypes.BOOLEAN,
@@ -39,11 +40,11 @@ const Personas = db.define('personas', {
       allowNull: false,
     },
     curp: {
-      type: DataTypes.STRING(18),
+      type: DataTypes.STRING,
       allowNull: false,
     },
     rfc: {
-      type: DataTypes.STRING(13),
+      type: DataTypes.STRING,
       allowNull: false,
     },
     activo: {
@@ -53,7 +54,5 @@ const Personas = db.define('personas', {
     timestamps: false,
     freezeTableName: true,
   });
-  
-Personas.belongsTo(TipoPersonas, { foreignKey: 'id_tipo_persona' });
-TipoPersonas.hasMany(Personas, { foreignKey: 'id_tipo_persona' });
+
 export default Personas;

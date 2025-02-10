@@ -1,119 +1,92 @@
-import User from "../models/UserModel.js";
-import Trabajador from "../models/TrabajadorModel.js";
+import { Sequelize, Op } from "sequelize";
 import Personas from "../models/PersonasModel.js";
-import TipoPersonas from "../models/TipoPersonasModel.js";
-import argon2 from "argon2";
 
-export const getUsers = async(req, res) => {
+export const getPersonas = async(req, res) => {
     try {
         const response = await Personas.findAll({
-            attributes: ['uuid', 'id_tipo_persona','nombre', 'apellido_pat', 'apellido_mat', 'sexo', 'fecha_nac','curp','rfc','activo'],
-            include: [{
-                model: TipoPersonas,
-                attributes:['uuid','nombre', 'descripcion', 'activo']
-            }]
+            attributes:['uuid','nombre', 'apellido_pat', 'apellido_mat', 'fecha_nac', 'curp', 'rfc', 'sexo', 'id_tipo_persona', 'activo'],
         });
-        res.status(200).json(response) 
+        res.status(200).json(response);
     } catch (error) {
-        res.status(500).json({msg: error.message})
+        res.status(500).json(error);
     }
 }
 
-export const getUserById = async(req, res) => {
+export const getPersonasById = async(req, res) => {
     try {
-        const response = await Personas.findOne({
+        const persona = await Personas.findOne({
             where:{
                 uuid: req.params.id
-            },
+            }
         });
-        res.status(200).json(response)
-    } catch (error) {
-        res.status(500).json({msg: error.message})
-    }
-}
-/*
-export const createUser = async(req, res) => {
-    const {id_tipo_persona,nombre, apellido_pat, apellido_mat, sexo, fecha_nac, curp,rfc,activo} = req.body;
-    if(password !== confPassword) return res.status(400).json({msg: "Las contraseñas no coinciden"})
-    const hashPassword = await argon2.hash(password);
-    try {
-        const trabajador = await Trabajador.findOne({ where: { uuid: trabajadorId } });
-        if (!trabajador) {
-            return res.status(400).json({ msg: "El trabajador no existe" });
-        }
-        await User.create({
-            name: name,
-            email: email,
-            password: hashPassword,
-            role: role,
-            trabajadorId: trabajador.id
+        if(!persona) return res.status(404).json({msg: "No se encontró la persona"});
+        const response = await Personas.findOne({
+            attributes:['uuid','nombre', 'apellido_pat', 'apellido_mat', 'fecha_nac', 'curp', 'rfc', 'sexo', 'id_tipo_persona', 'activo'],
+            where:{
+                id: persona.id
+            }
         });
-        res.status(201).json({msg: "Registro Exitoso!"})
+        res.status(200).json(response);
     } catch (error) {
-        res.status(500).json({msg: error.message})
+        res.status(500).json({msg: error.message});
     }
 }
 
-export const updateUser = async (req, res) => {
-    const user = await User.findOne({
-        where: {
-            uuid: req.params.id
-        }
-    });
-    if (!user) return res.status(404).json({ msg: "Usuario no encontrado!" });
-
-    const { name, email, password, confPassword, role, trabajadorId } = req.body;
-
-    // Validación de contraseñas
-    if (password !== confPassword) return res.status(400).json({ msg: "Las contraseñas no coinciden" });
-
-    let hashPassword;
-    if (password === "" || password === null || password === undefined) {
-        hashPassword = user.password;
-    } else {
-        hashPassword = await argon2.hash(password);
-    }
-
+export const createPersonas = async(req, res) => {
+    const { nombre, apellido_pat, apellido_mat, fecha_nac, curp, rfc, sexo, id_tipo_persona, activo } = req.body;
     try {
-        const trabajador = await Trabajador.findOne({ where: { uuid: trabajadorId } });
-        if (!trabajador) {
-            return res.status(400).json({ msg: "El trabajador no existe" });
-        }
+        await Personas.create({
+            nombre: nombre,
+            apellido_pat: apellido_pat,
+            apellido_mat: apellido_mat,
+            fecha_nac: fecha_nac,
+            curp: curp,
+            rfc: rfc,
+            sexo: sexo,
+            id_tipo_persona: id_tipo_persona,
+            activo: activo
+        });
+        res.status(200).json({msg: "Persona agregada exitosamente!"});
+    } catch (error) {
+        res.status(500).json({msg: error.message});
+    }
+}
 
-        await User.update({
-            name: name,
-            email: email,
-            password: hashPassword,
-            role: role,
-            trabajadorId: trabajador.id
-        }, {
+export const updatePersonas = async (req, res) => {
+    try {
+        const persona = await Personas.findOne({
             where: {
                 uuid: req.params.id
             }
         });
-
-        res.status(201).json({ msg: "Usuario actualizado!" });
+        const { nombre, apellido_pat, apellido_mat, fecha_nac, curp, rfc, sexo, id_tipo_persona, activo } = req.body;
+        if(!persona) return res.status(404).json({msg: "No se encontró la persona"});
+        await Personas.update({nombre, apellido_pat, apellido_mat, fecha_nac, curp, rfc, sexo, id_tipo_persona, activo},{
+            where:{
+                id: persona.id
+            }
+        });
+        res.status(200).json({ msg: "Persona actualizada exitosamente" });
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
-};
+}
 
-export const deleteUser = async(req, res) => {
-    const user = await User.findOne({
-        where:{
-            uuid: req.params.id
-        }
-    });
-    if(!user) return res.status(404).json({msg: "Usuario a"});
+export const deletePersonas = async(req, res) => {
     try {
-        await User.destroy({
+        const persona = await Personas.findOne({
             where:{
-                id: user.id
+                uuid: req.params.id
             }
         });
-        res.status(201).json({msg: "Usuario eliminado!"})
+        if(!persona) return res.status(404).json({msg: "No se encontró la persona"});
+        await Personas.destroy({
+            where:{
+                id: persona.id
+            }
+        });
+        res.status(200).json({msg: "Persona eliminada con éxito!"});
     } catch (error) {
-        res.status(500).json({msg: error.message})
+        res.status(500).json({msg: error.message});
     }
-    
-}*/
+}
