@@ -1,3 +1,4 @@
+
 import { Sequelize, Op } from "sequelize";
 import TipoPersonas from "../models/TipoPersonasModel.js";
 
@@ -5,7 +6,7 @@ export const getTipoPersonas = async(req, res) => {
     try {
         let response;
         response = await TipoPersonas.findAll({
-            attributes:['uuid','nombre', 'descripcion', 'activo'],
+            attributes:['id_tipo_persona','uuid','nombre', 'descripcion', 'activo'],
         });
         res.status(200).json(response);
         console.log(response)

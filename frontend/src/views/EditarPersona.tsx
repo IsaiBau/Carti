@@ -17,7 +17,7 @@ interface FormData {
   curp: string;
   rfc: string;
   sexo: boolean;
-  id_tipo_persona: number;
+  id_tipo_persona: number | null; // Asegúrate de que pueda ser null
   activo: boolean;
 }
 
@@ -53,7 +53,7 @@ const EditarPersona: React.FC = () => {
     curp: '',
     rfc: '',
     sexo: false,
-    id_tipo_persona: 1, // Valor inicial
+    id_tipo_persona: null, // Valor inicial null
     activo: false,
   });
 
@@ -69,7 +69,7 @@ const EditarPersona: React.FC = () => {
       try {
         const response = await axios.get<TipoPersona[]>('http://localhost:5000/tipo-personas');
         setTiposPersona(response.data);
-        console.log('Tipos de persona cargados:', response.data); // Verifica esto en la consola
+        console.log('Tipos de persona cargados:', response.data);
       } catch (error) {
         console.error('Error al cargar los tipos de persona:', error);
         setErrorMsg('Error al cargar los tipos de persona.');
@@ -248,21 +248,19 @@ const EditarPersona: React.FC = () => {
           <label>Tipo de persona:</label>
           <InputSelect
             name="id_tipo_persona"
-            value={formData.id_tipo_persona}
+            value={formData.id_tipo_persona || ""}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               const selectedId = parseInt(e.target.value, 10);
-              if (!isNaN(selectedId)) {
-                setFormData({
-                  ...formData,
-                  id_tipo_persona: selectedId,
-                });
-              }
+              setFormData({
+                ...formData,
+                id_tipo_persona: isNaN(selectedId) ? null : selectedId,
+              });
             }}
           >
             <option value="">Seleccionar tipo de persona</option>
             {tiposPersona.map((tipo) => (
               <option key={tipo.id_tipo_persona} value={tipo.id_tipo_persona}>
-                {tipo.nombre} {/* Mostramos el nombre del tipo de persona */}
+                {tipo.nombre}
               </option>
             ))}
           </InputSelect>

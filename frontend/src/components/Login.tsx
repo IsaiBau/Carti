@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Logo from '../assets/logo.png';
 import Img from '../assets/img.png';
 import Nodo1 from '../assets/nodo1.png';
@@ -23,6 +23,14 @@ interface FormData {
   activo: boolean;
 }
 
+interface TipoPersona {
+  id_tipo_persona: number;
+  uuid: string;
+  nombre: string;
+  descripcion: string;
+  activo: boolean;
+}
+
 const CrearPersona: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     nombre: '',
@@ -36,9 +44,26 @@ const CrearPersona: React.FC = () => {
     activo: true 
   });
 
-  const [errorMsg, setErrorMsg] = useState<string>(''); 
-  const [successMsg, setSuccessMsg] = useState<string>(''); 
-  const [loading, setLoading] = useState<boolean>(false); 
+  const [tiposPersona, setTiposPersona] = useState<TipoPersona[]>([]);
+  const [errorMsg, setErrorMsg] = useState<string>('');
+  const [successMsg, setSuccessMsg] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // Cargar tipos de persona
+  useEffect(() => {
+    const fetchTiposPersona = async () => {
+      try {
+        const response = await axios.get<TipoPersona[]>('http://localhost:5000/tipo-personas');
+        setTiposPersona(response.data);
+        console.log('Tipos de persona cargados:', response.data);
+      } catch (error) {
+        console.error('Error al cargar los tipos de persona:', error);
+        setErrorMsg('Error al cargar los tipos de persona.');
+      }
+    };
+
+    fetchTiposPersona();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -62,10 +87,10 @@ const CrearPersona: React.FC = () => {
     setErrorMsg('');
     setSuccessMsg('');
 
-    const { nombre, sexo, fecha_nac, curp, rfc } = formData;
+    const { nombre, sexo, fecha_nac, curp, rfc, id_tipo_persona } = formData;
 
     // Validación de campos obligatorios
-    if (!nombre || sexo === undefined || !fecha_nac || !curp || !rfc) {
+    if (!nombre || sexo === undefined || !fecha_nac || !curp || !rfc || !id_tipo_persona) {
       setErrorMsg('Por favor, llena todos los campos obligatorios.');
       setLoading(false);
       return;
@@ -84,9 +109,9 @@ const CrearPersona: React.FC = () => {
         fecha_nac: '',
         curp: '',
         rfc: '',
-        sexo: false, // Valor por defecto
-        id_tipo_persona: 1, // Valor por defecto
-        activo: true // Siempre activo
+        sexo: false, 
+        id_tipo_persona: 1, 
+        activo: true 
       });
     } catch (error: any) {
       setErrorMsg(error.response?.data?.msg || 'Error al crear persona.');
@@ -193,7 +218,6 @@ const CrearPersona: React.FC = () => {
                     />
                   </div>
                 </div>
-
                 {/* Input Sexo */}
                 <div className='flex flex-row items-center mt-5 mb-2'>   
                   <PiGenderFemaleBold className='text-[#8B8B8B] text-lg'/>
@@ -201,13 +225,30 @@ const CrearPersona: React.FC = () => {
                 </div>
                 <InputSelect
                   name='sexo'
-                  value={formData.sexo ? "1" : "0"} // Convertir booleano a string
+                  value={formData.sexo ? "1" : "0"} 
                   onChange={handleChange}
                 >
                   <option value="">Seleccionar</option>
-                  <option value="1">Masculino</option>
-                  <option value="0">Femenino</option>
+                  <option value="1">Hombre</option>
+                  <option value="0">Mujer</option>
                 </InputSelect>
+
+                {/* Campo para id_tipo_persona */}
+                <div className="flex items-center space-x-2">
+                  <label>Tipo de persona:</label>
+                  <InputSelect
+                    name="id_tipo_persona"
+                    value={formData.id_tipo_persona}
+                    onChange={handleChange}
+                  >
+                    <option value="">Seleccionar tipo de persona</option>
+                    {tiposPersona.map((tipo) => (
+                      <option key={tipo.id_tipo_persona} value={tipo.id_tipo_persona}>
+                        {tipo.nombre}
+                      </option>
+                    ))}
+                  </InputSelect>
+                </div>
 
                 {/* Botón */}
                 <button 
