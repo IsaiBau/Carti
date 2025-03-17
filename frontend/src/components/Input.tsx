@@ -22,6 +22,7 @@ const IconInput: React.FC<IconInputProps> = ({
     value, 
     onChange 
 }) => {
+
   return (
     <div className="relative group">
         <input 
@@ -31,6 +32,7 @@ const IconInput: React.FC<IconInputProps> = ({
         name={name}
         value={value}
         onChange={onChange}
+
         />
       <div 
       className="absolute inset-y-0 left-0 p-3 flex items-center justify-center pointer-events-none">
