@@ -5,10 +5,9 @@ import TipoPersonas from "../models/TipoPersonasModel.js";
 export const getPersonas = async (req, res) => {
     try {
         const response = await Personas.findAll({
-            attributes: ['uuid', 'nombre', 'apellido_pat', 'apellido_mat', 'fecha_nac', 'curp', 'rfc', 'sexo', 'id_tipo_persona', 'activo'],
-            include: [{ 
-                model:TipoPersonas, 
-                attributes: ['nombre'] 
+            attributes: ['id','uuid', 'id_tipo_persona','nombre', 'apellido_pat', 'apellido_mat', 'sexo', 'fecha_nac','curp','rfc','activo'],
+            include: [{
+                model: TipoPersonas,
             }]
         });
         res.status(200).json(response);

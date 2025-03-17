@@ -3,9 +3,16 @@ import cors from "cors";
 import session from "express-session";
 import db from './config/Database.js'; // Configuración de la base de datos
 import SequelizeStore from "connect-session-sequelize";
-import TipoPersonaRoute from "./routes/TipoPersonasRoute.js";
+//Importaciones de modelos de la base de datos
+import Personas from "./models/PersonasModel.js";
+import TipoPersonas from "./models/TipoPersonasModel.js";
+//Importaciones de routes
+import TipoPersonaRoute from "./routes/TipoPersonasRoute.js"
+import AuthRoute from "./routes/AuthRoute.js"
+import dotenv from "dotenv"
 import PersonasRoute from "./routes/personasRoutes.js"; // Importa la ruta de personas
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
@@ -33,8 +40,9 @@ app.listen(process.env.APP_PORT, () => {
 
 // Rutas
 app.use(TipoPersonaRoute);
+app.use(AuthRoute);
+//Conexion con la base de datos
 app.use(PersonasRoute); // Usar las rutas de personas
-
 // Conexión con la base de datos
 const sessionStore = SequelizeStore(session.Store);
 const store = new sessionStore({
