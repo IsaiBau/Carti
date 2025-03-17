@@ -1,59 +1,42 @@
 import React from 'react';
 
-interface StringNumberSelectOption {
-  value: string | number;
-  label: string;
+interface Option {
+  value: string; // Valor de la opción (debe ser un string)
+  label: string; // Texto que se muestra en la opción
 }
 
-interface StringNumberInputSelectProps {
-  options: StringNumberSelectOption[];
-  value: string | number;
-  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  name?: string;
-  id?: string;
+interface InputSelectDynamicProps {
+  options: Option[]; // Lista de opciones
+  value: string; // Valor seleccionado
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; // Manejador de cambios
+  name: string; // Nombre del campo
+  id: string; // ID del campo
+  className?: string; // Clases CSS opcionales
 }
 
-const InputSelectDynamic: React.FC<StringNumberInputSelectProps> = ({
+const InputSelectDynamic: React.FC<InputSelectDynamicProps> = ({
   options,
   value,
   onChange,
-  name = '',
-  id = ''
+  name,
+  id,
+  className = '',
 }) => {
   return (
-    <div className="relative group">
-      <select 
-        className="w-full h-[50px] border p-3 rounded-[7px] hover:text-[#2787E0] poppins-regular border-[#B8B8B8] focus:border-blue-400 focus:ring focus:ring-blue-300 focus:placeholder-blue-500 focus:outline-none input-transition hover:border-blue-500 hover:placeholder-blue-500" 
-        value={String(value)} // Convertir el value a string
-        onChange={onChange}
-        name={name}
-        id={id}
-      >
-        {options.map(option => (
-          <option key={String(option.value)} value={String(option.value)}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
+    <select
+      name={name}
+      id={id}
+      value={value}
+      onChange={onChange}
+      className={`p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
+    >
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   );
 };
 
 export default InputSelectDynamic;
-
-/*
-Para usarlo deben declararse los options:
-const Options = [
-  { value: 'option1', label: "Opción 1" },
-  { value: 'option2', label: "Opción 2" },
-  { value: 3, label: "Opción 3" }
-];
-y se mandaria a llamar asi
-<InputSelectDynamic 
-  options={stringNumberOptions}
-  value={descripcion} // Aquí puedes usar cualquier estado que necesites
-  onChange={handleChange} //Aqui debes usar una funcion declarada como en TipoPersonas
-  name={"opciones"}
-  id={"opciones"}
-/>
-*/
