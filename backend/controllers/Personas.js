@@ -7,7 +7,7 @@ import argon2 from "argon2";
 export const getUsers = async(req, res) => {
     try {
         const response = await Personas.findAll({
-            attributes: ['uuid', 'id_tipo_persona','nombre', 'apellido_pat', 'apellido_mat', 'sexo', 'fecha_nac','curp','rfc','activo'],
+            attributes: ['id','uuid', 'id_tipo_persona','nombre', 'apellido_pat', 'apellido_mat', 'sexo', 'fecha_nac','curp','rfc','activo'],
             include: [{
                 model: TipoPersonas,
                 attributes:['uuid','nombre', 'descripcion', 'activo']

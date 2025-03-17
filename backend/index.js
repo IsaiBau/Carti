@@ -8,6 +8,7 @@ import Personas from "./models/PersonasModel.js";
 import TipoPersonas from "./models/TipoPersonasModel.js";
 //Importaciones de routes
 import TipoPersonaRoute from "./routes/TipoPersonasRoute.js"
+import AuthRoute from "./routes/AuthRoute.js"
 import dotenv from "dotenv"
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.listen(process.env.APP_PORT, () =>{
 });
 //rutas
 app.use(TipoPersonaRoute);
+app.use(AuthRoute);
 //Conexion con la base de datos
 const sessionStore = SequelizeStore(session.Store);
 const store = new sessionStore({
