@@ -1,5 +1,5 @@
 import React from 'react'
-import Logo from '../assets/logo.png'
+import Logo from '../assets/logo.svg'
 import Img from '../assets/img.png'
 import Nodo1 from '../assets/nodo1.png'
 import Nodo2 from '../assets/nodo2.png'
@@ -15,7 +15,7 @@ const Login = () => {
     <div>
         <div className='flex flex-row w-full h-screen'>
             <div className='flex flex-col justify-center items-center text-center w-[50%] p-20'>
-                <img src={Logo} alt="LOGO"/>
+                <img className='' src={Logo} alt="LOGO"/>
                 <div className='flex flex-col w-md'>
                     <p className='poppins-bold text-[34px]'>Crear una nueva cuenta<b className='poppins-semibold text-6xl text-[#2787E0]'>.</b></p>
                     <p className='poppins-regular text-[#8B8B8B] flex justify-start'>¡Bienvenido! Ingresa los datos que se te piden:</p>

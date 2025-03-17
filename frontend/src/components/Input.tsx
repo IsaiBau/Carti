@@ -2,7 +2,7 @@ import React from 'react'
 import { IconType } from 'react-icons';
 
 
-interface IconInputProps {
+interface InputProps {
     placeholder: string;
     type?: string;
     icon?: IconType;
@@ -10,7 +10,7 @@ interface IconInputProps {
     className?: string;
   }
 
-const IconInput: React.FC<IconInputProps> = ({ placeholder, type = 'text', icon: Icon = 'none', iconClassName = '', className = '' }) => {
+const Input: React.FC<InputProps> = ({ placeholder, type = 'text', icon: Icon = 'none', iconClassName = '', className = '' }) => {
   return (
     <div className="relative group">
         <input 
@@ -27,4 +27,4 @@ const IconInput: React.FC<IconInputProps> = ({ placeholder, type = 'text', icon:
   );
 };
 
-export default IconInput;
+export default Input;
