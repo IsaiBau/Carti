@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './views/Home';
@@ -39,9 +40,10 @@ function App() {
         <Route path="/login" element={<Login/>}/>
         <Route path='/vista' element={<Vista/>}/>
         <Route path='/tipo-personas' element={<TipoPersonas/>}/>
+        <Route path='/editar_persona' element={<EditarPersona/>}/>
       </Routes>
     </>
   )
 }
 
-export default App
+export default App;

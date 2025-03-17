@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+Import React, { useState, useEffect } from "react";
 import Logo from '../assets/logo.png';
 import Img from '../assets/img.png';
 import Nodo1 from '../assets/nodo1.png';
