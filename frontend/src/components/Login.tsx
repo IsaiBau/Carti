@@ -1,4 +1,4 @@
-Import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Logo from '../assets/logo.png';
 import Img from '../assets/img.png';
 import Nodo1 from '../assets/nodo1.png';
@@ -44,6 +44,7 @@ const Login = () => {
                             <form onSubmit={Auth}>
                                 {/* Input Nombre */}
                                 <Input
+                                    name="name"
                                     placeholder='Nombre'
                                     icon={FaRegAddressCard}
                                     value={nombre}
@@ -55,6 +56,7 @@ const Login = () => {
                                 <div className='my-2 grid gap-4 grid-cols-2'>
                                     <div className='col-span-2 sm:col-span-1'>
                                         <Input
+                                            name="name"
                                             placeholder='RFC'
                                             iconClassName='group-hover:-translate-x-[5px]'
                                             icon={FaRegIdBadge}

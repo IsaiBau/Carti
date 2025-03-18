@@ -5,6 +5,7 @@ import Home from './views/Home';
 import Login from './components/Login';
 import Vista from "./views/vista";
 import TipoPersonas from './views/TipoPersonas';
+import EditarPersona from "./views/EditarPersona.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { RootState, AppDispatch } from "./app/store";

@@ -11,7 +11,6 @@ import TipoPersonaRoute from "./routes/TipoPersonasRoute.js"
 import AuthRoute from "./routes/AuthRoute.js"
 import dotenv from "dotenv"
 import PersonasRoute from "./routes/personasRoutes.js"; // Importa la ruta de personas
-import dotenv from "dotenv";
 
 dotenv.config();
 
