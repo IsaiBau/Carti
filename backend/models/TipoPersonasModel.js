@@ -31,7 +31,7 @@ const TipoPersonas = db.define('tipo_personas', {
     timestamps: false,
     freezeTableName: true,
   });
-
-  TipoPersonas.hasMany(Personas, { foreignKey: 'id_tipo_persona' });
+  Personas.belongsTo(TipoPersonas, { foreignKey: 'id_tipo_persona',onDelete: 'NO ACTION' });
+  TipoPersonas.hasMany(Personas, { foreignKey: 'id_tipo_persona',onDelete: 'NO ACTION' });
 
 export default TipoPersonas;
