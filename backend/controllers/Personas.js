@@ -67,9 +67,13 @@ export const updatePersonas = async (req, res) => {
 
         if (!persona) return res.status(404).json({ msg: "No se encontró la persona" });
 
-        const { id_tipo_persona, ...otherData } = req.body;
+        const { id_tipo_persona, password, ...otherData } = req.body;
 
+        if (password !== undefined && password !== "") {
+            otherData.password = await argon2.hash(password);
+        }
         
+
         if (id_tipo_persona) {
             const tipoPersona = await TipoPersonas.findByPk(id_tipo_persona);
             if (!tipoPersona) return res.status(400).json({ msg: "El tipo de persona no existe" });
