@@ -1,5 +1,8 @@
 import { DataTypes } from 'sequelize';
 import db from '../config/Database.js';
+import ChoferUnidad from './ChoferUnidadModel.js';
+import RegistroLlegadas from './RegistroLlegadasModel.js';
+import Unidades from './UnidadesModel.js';
 
 const Personas = db.define('personas', {
     id: {
@@ -47,6 +50,14 @@ const Personas = db.define('personas', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    password:{
+        type: DataTypes.STRING,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        validate: {
+            notEmpty: true,
+        }
+    },
     activo: {
         type: DataTypes.BOOLEAN,
     },
@@ -55,10 +66,11 @@ const Personas = db.define('personas', {
     freezeTableName: true,
 });
 
-// Importar TipoPersonas dinámicamente después de definir el modelo
-import('./TipoPersonasModel.js').then((TipoPersonasModule) => {
-    const TipoPersonas = TipoPersonasModule.default;
-    Personas.belongsTo(TipoPersonas, { foreignKey: 'id_tipo_persona' });
-});
+Personas.hasMany(ChoferUnidad, { foreignKey: 'id_personas' });
+ChoferUnidad.belongsTo(Personas, { foreignKey: 'id_personas' });
+Personas.hasMany(Unidades, { foreignKey: 'id_personas' });
+Unidades.belongsTo(Personas, { foreignKey: 'id_personas' });
+Personas.hasMany(RegistroLlegadas, { foreignKey: 'id_personas', onDelete: 'NO ACTION'});
+RegistroLlegadas.belongsTo(Personas, { foreignKey: 'id_personas', onDelete: 'NO ACTION' });
 
 export default Personas;

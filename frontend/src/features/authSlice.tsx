@@ -3,8 +3,8 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 interface User {
     id: string;
-    nombre: string;
     rfc: string;
+    password: string;
     rol?: string; // Puedes ajustar los roles según tu lógica
 }
 
@@ -27,14 +27,13 @@ const initialState: AuthState = {
 // Función para loguear al usuario
 export const LoginUser = createAsyncThunk<
     User, // Tipo de dato que retorna la función (el usuario)
-    { nombre: string; rfc: string; }, // Tipo de argumento que acepta
+    { rfc: string; password: string; }, // Tipo de argumento que acepta
     { rejectValue: string } // Tipo del error que se retorna
 >("user/LoginUser", async (user, thunkAPI) => {
     try {
         const response = await axios.post("http://localhost:5000/login", {
-            nombre: user.nombre,
             rfc: user.rfc,
-            
+            password: user.password
         });
         return response.data;
     } catch (error: any) {

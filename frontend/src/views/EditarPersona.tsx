@@ -4,7 +4,7 @@ import axios from 'axios';
 import IconInput from '../components/Input';
 import InputSelect from '../components/InputSelect';
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
-import { FaRegIdBadge } from "react-icons/fa6";
+import { FaLock, FaRegIdBadge } from "react-icons/fa6";
 import { PiGenderFemaleBold } from "react-icons/pi";
 import { FaRegAddressCard } from 'react-icons/fa6';
 
@@ -18,6 +18,7 @@ interface FormData {
   rfc: string;
   sexo: boolean;
   id_tipo_persona: number | null; // Asegúrate de que pueda ser null
+  password: string;
   activo: boolean;
 }
 
@@ -31,6 +32,7 @@ interface Persona {
   rfc: string;
   sexo: boolean;
   id_tipo_persona: number;
+  password: string;
   activo: boolean;
 }
 
@@ -54,9 +56,10 @@ const EditarPersona: React.FC = () => {
     rfc: '',
     sexo: false,
     id_tipo_persona: null, // Valor inicial null
+    password: '',
     activo: false,
   });
-
+  const [passwordConfirm, setPasswordConfirm] = useState<string>('');
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [tiposPersona, setTiposPersona] = useState<TipoPersona[]>([]);
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -114,15 +117,69 @@ const EditarPersona: React.FC = () => {
   // Manejar cambios en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+    const noCaracteresEspeciales = /^[A-Z0-9]+$/;
+    if (name === 'password_comparar') {
+      setPasswordConfirm(value); // Actualizar la confirmación de la contraseña
+    }
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     });
+    if (name === 'curp') {
+      if (value.length !== 18) {
+          setErrorMsg('La CURP debe tener exactamente 18 caracteres.');
+      } else if (value !== value.toUpperCase()) {
+          setErrorMsg('La CURP debe estar en mayúsculas.');
+      } else if (!noCaracteresEspeciales.test(value)) {
+          setErrorMsg('La CURP solo debe contener letras mayúsculas y números, sin caracteres especiales.');
+      }else {
+          setErrorMsg('');
+      }
+  } else if (name === 'rfc') {
+      if (value.length < 12 || value.length > 13) {
+          setErrorMsg('El RFC debe tener entre 12 y 13 caracteres.');
+      } else if (value !== value.toUpperCase()) {
+          setErrorMsg('El RFC debe estar en mayúsculas.');
+      }else if (!noCaracteresEspeciales.test(value)) {
+          setErrorMsg('El RFC solo debe contener letras mayúsculas y números, sin caracteres especiales.');
+      } else {
+          setErrorMsg('');
+      }
+  }    
+  };
+  const validateForm = () => {
+    if (formData.password !== passwordConfirm) {
+      setErrorMsg('Las contraseñas no coinciden.');
+      return false;
+    }
+     // Validación de campos obligatorios
+     if (!formData.nombre || formData.sexo === undefined || !formData.fecha_nac || !formData.curp || !formData.rfc || !formData.id_tipo_persona) {
+      setErrorMsg('Por favor, llena todos los campos obligatorios.');
+      setLoading(false);
+      return;
+    }
+    
+    const noCaracteresEspeciales = /^[A-Z0-9]+$/;
+    // Validar que CURP no contenga caracteres no permitidos y esté en mayúsculas
+    if (!noCaracteresEspeciales.test(formData.curp)) {
+        setErrorMsg('La CURP solo debe contener letras mayúsculas y números, sin caracteres especiales.');
+        setLoading(false);
+        return false;
+    }
+
+    // Validar que RFC no contenga caracteres no permitidos y esté en mayúsculas
+    if (!noCaracteresEspeciales.test(formData.rfc)) {
+        setErrorMsg('El RFC solo debe contener letras mayúsculas y números, sin caracteres especiales.');
+        setLoading(false);
+        return false;
+    }
+    return true;
   };
 
   // Manejar envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
     setLoading(true);
     setErrorMsg('');
     setSuccessMsg('');
@@ -229,6 +286,32 @@ const EditarPersona: React.FC = () => {
             onChange={handleChange}
           />
         </div>
+        {/* Input contraseña */}
+        <div className='my-2 grid gap-4 grid-cols-2 mt-5'>
+          <div className='col-span-2 sm:col-span-1'>
+            <IconInput 
+              name='password'
+              placeholder='Contraseña' 
+              iconClassName='group-hover:-translate-x-[20px]'
+              icon={FaLock}
+              value={formData.password}
+              onChange={handleChange}
+              type="password"
+            />
+            </div>
+            <div className='col-span-2 sm:col-span-1'>
+              <IconInput 
+                name='password_comparar'
+                placeholder='Confirmar contraseña' 
+                iconClassName='group-hover:-translate-x-[20px]'
+                icon={FaLock}
+                value={passwordConfirm}
+                onChange={handleChange}
+                type="password"
+            />
+            </div>
+        </div>
+
         <div className="flex items-center space-x-2">
           <PiGenderFemaleBold className="text-[#8B8B8B] text-lg" />
           <p className="text-[#8B8B8B]">Sexo</p>

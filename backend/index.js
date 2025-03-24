@@ -4,8 +4,15 @@ import session from "express-session";
 import db from './config/Database.js'; // Configuración de la base de datos
 import SequelizeStore from "connect-session-sequelize";
 //Importaciones de modelos de la base de datos
-import Personas from "./models/PersonasModel.js";
 import TipoPersonas from "./models/TipoPersonasModel.js";
+import Personas from "./models/PersonasModel.js";
+import Rutas from "./models/RutasModel.js";
+import Paradas from "./models/ParadasModel.js";
+import Unidades from "./models/UnidadesModel.js";
+import ChoferUnidad from "./models/ChoferUnidadModel.js";
+import Finanzas from "./models/FinanzasModel.js";
+import Viajes from "./models/ViajesModel.js";
+import RegistroLlegadas from "./models/RegistroLlegadasModel.js";
 //Importaciones de routes
 import TipoPersonaRoute from "./routes/TipoPersonasRoute.js"
 import AuthRoute from "./routes/AuthRoute.js"
@@ -49,7 +56,7 @@ const store = new sessionStore({
 });
 (async () => {
     try {
-        await db.sync({});
+        await db.sync();
         console.log('Base de datos sincronizada');
     } catch (error) {
         console.error('Error al sincronizar la base de datos:', error);
