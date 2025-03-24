@@ -5,6 +5,7 @@ import Home from './views/Home';
 import Login from './components/Login';
 import Vista from "./views/vista";
 import TipoPersonas from './views/TipoPersonas';
+import PanelControl from './views/dueño/PanelControl';
 import EditarPersona from "./views/EditarPersona.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -42,6 +43,7 @@ function App() {
         <Route path='/vista' element={<Vista/>}/>
         <Route path='/tipo-personas' element={<TipoPersonas/>}/>
         <Route path='/editar_persona' element={<EditarPersona/>}/>
+        <Route path='/panel-de-control' element={<PanelControl/>}/>
       </Routes>
     </>
   )

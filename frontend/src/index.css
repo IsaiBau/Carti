@@ -35,4 +35,20 @@
     transition: 0.2s;
   }
 
+  .bg{
+    background: linear-gradient(180deg, #2787E0, #1C61BB);
+  }
+
+  .bg-green-light{
+    background: #E1FBED;
+  }
+
+  .bg-blue-light{
+    background: #dcfdff;
+  }
   
+  .hover-menu:hover{
+    background: white;
+    color: #2787E0;
+  }
+

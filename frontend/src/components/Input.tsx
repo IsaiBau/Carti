@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconType } from 'react-icons';
 
+
 interface IconInputProps {
     placeholder: string;
     type?: string;
