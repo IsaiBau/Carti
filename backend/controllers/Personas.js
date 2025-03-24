@@ -1,11 +1,12 @@
 import { Sequelize, Op } from "sequelize";
 import Personas from "../models/PersonasModel.js";
 import TipoPersonas from "../models/TipoPersonasModel.js"; 
+import argon2 from "argon2";
 
 export const getPersonas = async (req, res) => {
     try {
         const response = await Personas.findAll({
-            attributes: ['id','uuid', 'id_tipo_persona','nombre', 'apellido_pat', 'apellido_mat', 'sexo', 'fecha_nac','curp','rfc','activo'],
+            attributes: ['id','uuid', 'id_tipo_persona','nombre', 'apellido_pat', 'apellido_mat', 'sexo', 'fecha_nac','curp','rfc','password','activo'],
             include: [{
                 model: TipoPersonas,
             }]
@@ -35,12 +36,12 @@ export const getPersonasById = async (req, res) => {
 }
 
 export const createPersonas = async (req, res) => {
-    const { nombre, apellido_pat, apellido_mat, fecha_nac, curp, rfc, sexo, id_tipo_persona, activo } = req.body;
+    const { nombre, apellido_pat, apellido_mat, fecha_nac, curp, rfc, sexo, id_tipo_persona,password, activo } = req.body;
 
     try {
         const tipoPersona = await TipoPersonas.findByPk(id_tipo_persona);
         if (!tipoPersona) return res.status(400).json({ msg: "El tipo de persona no existe" });
-
+        const hashedPassword = await argon2.hash(password);
         await Personas.create({
             nombre,
             apellido_pat,
@@ -50,6 +51,7 @@ export const createPersonas = async (req, res) => {
             rfc,
             sexo,
             id_tipo_persona,
+            password:hashedPassword,
             activo
         });
 

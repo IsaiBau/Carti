@@ -12,7 +12,7 @@ import { LoginUser, reset } from "../features/authSlice";
 import { RootState, AppDispatch } from "../app/store"; // Importa RootState y AppDispatch
 
 const Login = () => {
-    const [nombre, setNombre] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
     const [rfc, setRfc] = useState<string>("");
     const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
     const navigate = useNavigate();
@@ -29,7 +29,7 @@ const Login = () => {
 
     const Auth = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(LoginUser({ nombre, rfc })); // Asegúrate de pasar un objeto con la estructura correcta
+        dispatch(LoginUser({ rfc,password })); // Asegúrate de pasar un objeto con la estructura correcta
     };
 
     return (
@@ -44,11 +44,11 @@ const Login = () => {
                             <form onSubmit={Auth}>
                                 {/* Input Nombre */}
                                 <Input
-                                    name="name"
-                                    placeholder='Nombre'
+                                    name="rfc"
+                                    placeholder='RFC'
                                     icon={FaRegAddressCard}
-                                    value={nombre}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNombre(e.target.value)}
+                                    value={rfc}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRfc(e.target.value)}
                                 >
                                 </Input>
 
@@ -56,12 +56,12 @@ const Login = () => {
                                 <div className='my-2 grid gap-4 grid-cols-2'>
                                     <div className='col-span-2 sm:col-span-1'>
                                         <Input
-                                            name="name"
-                                            placeholder='RFC'
+                                            name="password"
+                                            placeholder='Contraseña'
                                             iconClassName='group-hover:-translate-x-[5px]'
                                             icon={FaRegIdBadge}
-                                            value={rfc}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRfc(e.target.value)}
+                                            value={password}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                                         >
                                         </Input>
                                     </div>

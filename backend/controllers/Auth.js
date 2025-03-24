@@ -6,7 +6,7 @@ import argon2 from "argon2";
 export const Login = async(req, res) =>{
     const user = await User.findOne({
         where: {
-            nombre: req.body.nombre 
+            rfc: req.body.rfc 
         },
         include: [{
             model: TipoPersonas,
@@ -16,16 +16,16 @@ export const Login = async(req, res) =>{
     });
     if(!user) return res.status(404).json({msg: "Usuario no encontrado"});
     
-    // Comparar el RFC directamente
-    if(user.rfc !== req.body.rfc) return res.status(400).json({msg: "RFC incorrecto"});
-    
+    const match = await argon2.verify(user.password, req.body.password);
+    if (!match) return res.status(400).json({ msg: "Contraseña incorrecta" });
+
     req.session.userId = user.uuid;
     const uuid = user.uuid;
     const id = user.id;
     const nombre = user.nombre;
-    const email = user.rfc;
+    const rfc = user.rfc;
     const rol = user.tipo_persona.nombre;
-    res.status(200).json({id, uuid, nombre, email, rol});
+    res.status(200).json({id, uuid, nombre, rfc, rol});
 }
 
 export const Me = async (req, res) => {

@@ -20,7 +20,7 @@ const Unidades = db.define('unidades', {
         allowNull: false,
     },
     placa: {
-        type: DataTypes.STRING(7),
+        type: DataTypes.STRING(8),
         allowNull: false,
         validate: {
             notEmpty: true, // Asegura que el campo no esté vacío
