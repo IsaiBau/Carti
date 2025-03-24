@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize';
 import db from '../config/Database.js';
 import ChoferUnidad from './ChoferUnidadModel.js';
 import RegistroLlegadas from './RegistroLlegadasModel.js';
+import Unidades from './UnidadesModel.js';
 
 const Personas = db.define('personas', {
     id: {
@@ -67,6 +68,8 @@ const Personas = db.define('personas', {
 
 Personas.hasMany(ChoferUnidad, { foreignKey: 'id_personas' });
 ChoferUnidad.belongsTo(Personas, { foreignKey: 'id_personas' });
+Personas.hasMany(Unidades, { foreignKey: 'id_personas' });
+Unidades.belongsTo(Personas, { foreignKey: 'id_personas' });
 Personas.hasMany(RegistroLlegadas, { foreignKey: 'id_personas', onDelete: 'NO ACTION'});
 RegistroLlegadas.belongsTo(Personas, { foreignKey: 'id_personas', onDelete: 'NO ACTION' });
 
