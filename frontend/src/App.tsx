@@ -13,6 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { RootState, AppDispatch } from "./app/store";
 import { getMe } from "./features/authSlice.js";
 import Choferes from "./views/dueño/Chofer.js";
+import { LeaMap } from "./components/Map.js";
 
 function App() {
   const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
@@ -48,6 +49,7 @@ function App() {
         <Route path='/editar_persona' element={<EditarPersona/>}/>
         <Route path='/panel-de-control' element={<PanelControl/>}/>
         <Route path='/choferes' element={<Choferes/>}/>
+        <Route path='/mapa' element={<LeaMap/>}/>
       </Routes>
     </>
   )
