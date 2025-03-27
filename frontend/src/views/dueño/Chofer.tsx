@@ -12,8 +12,12 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import DatePicker from '../../components/DatePicker';
 import Checkbox from '../../components/Checkbox';
-
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { RootState, AppDispatch } from "../../app/store";
+import { getMe } from "../../features/authSlice";
 interface Chofer {
+  id:number;
   uuid: string;
   nombre: string;
   apellido_pat: string;
@@ -32,11 +36,34 @@ interface Chofer {
 }
 
 const Choferes = () => {
+  const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
+  const navigate = useNavigate();
+  const { isError, user } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isError) {
+      navigate("/login");
+    }
+    if (
+      user &&
+      user.rol !== "conductor" &&
+      user.rol !== "dueño" &&
+      user.rol !== "checador" &&
+      user.rol !== "admin" 
+    ) {
+      navigate("/login");
+    }
+  }, [isError, user, navigate]);
+console.log(user)
   const [choferes, setChoferes] = useState<Chofer[]>([]);
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentId, setCurrentId] = useState<string | null>(null);
-  
+  const userId = user?.id; 
   // Estado del formulario
   const [formData, setFormData] = useState({
     nombre: '',
@@ -61,37 +88,24 @@ const Choferes = () => {
 
   const cerrarSesion = { icono: IconCerrarSes, texto: 'Cerrar sesión', ruta: '/logout' };
 
-  // Cargar choferes al montar el componente
-  useEffect(() => {
+console.log(userId)
+const fetchChoferes = async () => {
+  try {
+    setLoading(true);
+    const response = await axios.get(`http://localhost:5000/choferes/${user?.id}`);
+    setChoferes(response.data.trabajadores || []);
+  } catch (error) {
+    console.error('Error al cargar choferes:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  if (user?.id) {
     fetchChoferes();
-  }, []);
-
-  const fetchChoferes = async () => {
-    try {
-      // Cambiamos para usar getTrabajadoresByDueno
-      const response = await axios.get('http://localhost:5000/choferes/mis-choferes');
-      
-      // Adaptamos la respuesta al formato esperado
-      const choferesFormateados = response.data.trabajadores.map((t: any) => ({
-        uuid: t.uuid || '',
-        nombre: t.nombre,
-        apellido_pat: t.apellido_pat,
-        apellido_mat: t.apellido_mat,
-        sexo: t.sexo,
-        fecha_nac: t.fecha_nac,
-        curp: t.curp,
-        rfc: t.rfc,
-        activo: t.activo,
-        unidades: t.unidades
-      }));
-      
-      setChoferes(choferesFormateados);
-    } catch (error) {
-      console.error('Error al cargar choferes:', error);
-      alert('Error al cargar la lista de choferes');
-    }
-  };
-
+  }
+}, [user?.id]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
@@ -376,7 +390,7 @@ const Choferes = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.sexo ? 'Hombre' : 'Mujer'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.fecha_nac}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {chofer.unidades?.[0]?.numero || 'N/A'}
+                    {chofer.unidades?.reduce((acc, unidad) => acc ? `${acc}, ${unidad.numero}` : unidad.numero, '') || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${

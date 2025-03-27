@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { RootState, AppDispatch } from "./app/store";
 import { getMe } from "./features/authSlice.js";
+import Choferes from "./views/dueño/Chofer.js";
 
 function App() {
   const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
@@ -46,6 +47,7 @@ function App() {
         <Route path='/tipo-personas' element={<TipoPersonas/>}/>
         <Route path='/editar_persona' element={<EditarPersona/>}/>
         <Route path='/panel-de-control' element={<PanelControl/>}/>
+        <Route path='/choferes' element={<Choferes/>}/>
       </Routes>
     </>
   )
