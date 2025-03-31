@@ -80,3 +80,5 @@ export const LeaMap: React.FC<LeaMapProps> = () => {
     </MapContainer>
   );
 };
+
+export default Map;
