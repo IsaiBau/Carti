@@ -22,7 +22,7 @@ const Login = () => {
 
     useEffect(() => {
         if (user || isSuccess) {
-            navigate("/tipo-personas");
+            navigate("/panel-control");
         }
         dispatch(reset());
     }, [user, isSuccess, dispatch, navigate]);
