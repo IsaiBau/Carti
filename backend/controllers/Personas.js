@@ -120,6 +120,7 @@ export const getTrabajadoresByDueno = async (req, res) => {
             attributes: ['id', 'nombre', 'apellido_pat', 'apellido_mat', 'sexo', 'fecha_nac', 'curp', 'rfc', 'activo'],
             include: [{
                 model: ChoferUnidad,
+                required: false,
                 where: { id_unidades: { [Op.in]: unidadesIds } },
                 attributes: ['id_unidades', 'turno'],
                 include: [{

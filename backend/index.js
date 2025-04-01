@@ -16,6 +16,7 @@ import RegistroLlegadas from "./models/RegistroLlegadasModel.js";
 //Importaciones de routes
 import TipoPersonaRoute from "./routes/TipoPersonasRoute.js"
 import AuthRoute from "./routes/AuthRoute.js"
+import UnidadesRoute from "./routes/UnidadesRoute.js"
 import dotenv from "dotenv"
 import PersonasRoute from "./routes/personasRoutes.js"; // Importa la ruta de personas
 
@@ -47,6 +48,7 @@ app.listen(process.env.APP_PORT, () => {
 // Rutas
 app.use(TipoPersonaRoute);
 app.use(AuthRoute);
+app.use(UnidadesRoute);
 //Conexion con la base de datos
 app.use(PersonasRoute); // Usar las rutas de personas
 // Conexión con la base de datos

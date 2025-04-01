@@ -81,7 +81,7 @@ console.log(user)
 
   // Items del menu
   const menuItems = [
-    { icono: IconMenu, texto: 'Panel', ruta: '/panel' },
+    { icono: IconMenu, texto: 'Panel', ruta: '/panel-control' },
     { icono: IconUni, texto: 'Unidades', ruta: '/unidades' },
     { icono: IconChof, texto: 'Choferes', ruta: '/choferes' },
   ];
