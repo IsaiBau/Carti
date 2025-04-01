@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import db from '../config/Database.js';
+import Personas from "../models/PersonasModel.js";
 
 const TipoPersonas = db.define('tipo_personas', {
     id_tipo_persona: {
@@ -30,5 +31,7 @@ const TipoPersonas = db.define('tipo_personas', {
     timestamps: false,
     freezeTableName: true,
   });
+  Personas.belongsTo(TipoPersonas, { foreignKey: 'id_tipo_persona',onDelete: 'NO ACTION' });
+  TipoPersonas.hasMany(Personas, { foreignKey: 'id_tipo_persona',onDelete: 'NO ACTION' });
 
 export default TipoPersonas;

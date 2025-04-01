@@ -1,0 +1,34 @@
+###
+//Obtener TODOS los ripos usuarios
+GET http://localhost:5000/tipo-personas
+
+//Obtener un solo usuario
+GET http://localhost:5000/tipo-personas/uuid_tipo_persona
+
+
+###
+//Login del usuario
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "nombre": "Isai",
+    "rfc": "SABI0202084T5"
+}
+
+###
+//Login del administrador
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "name": "admin",
+    "password": "123456"
+}
+
+###
+GET  http://localhost:5000/me
+
+###
+//Cerrar sesion
+DELETE  http://localhost:5000/logout

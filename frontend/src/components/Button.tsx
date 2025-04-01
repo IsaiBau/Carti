@@ -2,13 +2,15 @@ import React, { ReactNode } from 'react';
 
 interface ButtonProps {
   children: ReactNode;
+  className?: string;
+  onClick?: string;
 }
 
-export const Button: React.FC<ButtonProps> = (props) => {
+const Button: React.FC<ButtonProps> = ({children, className = '',}) => {
   return (
-    <button className="button-principal inline-flex justify-center rounded-lg border border-transparent shadow-sm px-5 py-3 font-medium text-sm text-center text-white sm:text-base items-center me-2">
-      {props.children}
-    </button>
+      <button className={`w-35 hidden rounded-md px-3 py-2.5 text-sm poppins-semibold cursor-pointer text-[#3290e7] transition sm:block input-transition ${className}`}>
+        {children}
+      </button>
   );
 };
 
