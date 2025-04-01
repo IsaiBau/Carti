@@ -49,7 +49,7 @@ function App() {
         <Route path='/registrar' element={<CrearPersona/>}/>
         <Route path='/tipo-personas' element={<TipoPersonas/>}/>
         <Route path='/editar_persona' element={<EditarPersona/>}/>
-        <Route path='/panel-de-control' element={<PanelControl/>}/>
+        <Route path='/panel-control' element={<PanelControl/>}/>
         <Route path='/choferes' element={<Choferes/>}/>
         <Route path='/home-chofer' element={<HomeChofer/>}/>
         <Route path='/home-checador' element={<HomeChecador/>}/>

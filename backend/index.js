@@ -56,7 +56,7 @@ const store = new sessionStore({
 });
 (async () => {
     try {
-        await db.sync({force:true});
+        await db.sync();
         console.log('Base de datos sincronizada');
         
     } catch (error) {
