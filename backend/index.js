@@ -15,6 +15,7 @@ import Viajes from "./models/ViajesModel.js";
 import RegistroLlegadas from "./models/RegistroLlegadasModel.js";
 //Importaciones de routes
 import TipoPersonaRoute from "./routes/TipoPersonasRoute.js"
+import RutasRoute from "./routes/RutasRoute.js";
 import AuthRoute from "./routes/AuthRoute.js"
 import UnidadesRoute from "./routes/UnidadesRoute.js"
 import ParadasRoute from "./routes/ParadasRoute.js"
@@ -51,6 +52,7 @@ app.use(TipoPersonaRoute);
 app.use(AuthRoute);
 app.use(UnidadesRoute);
 app.use(ParadasRoute)
+app.use(RutasRoute)
 //Conexion con la base de datos
 app.use(PersonasRoute); // Usar las rutas de personas
 // Conexión con la base de datos
