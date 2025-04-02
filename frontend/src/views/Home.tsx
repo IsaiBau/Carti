@@ -1,32 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { getMe } from "../features/authSlice"; // Asegúrate de importar getMe
-import { RootState, AppDispatch } from "../app/store"; // Importa RootState y AppDispatch
-
+import React from "react";
+import { Link } from "react-router-dom";
+import Layout from "../components/Layout";
+import Button from "../components/Button";
+import Nodos from "../assets/nodos.svg"
 const Home = () => {
-  const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
-  const navigate = useNavigate();
-  const { isError, user } = useSelector((state: RootState) => state.auth); // Tipa el estado con RootState
-  const [errorMsg, setErrorMsg] = useState<string>(""); // Tipa el estado como string
-
-  useEffect(() => {
-    dispatch(getMe());
-  }, [dispatch]);
-
-  useEffect(() => {
-    // Si el usuario no está logueado, lo manda a la página de login
-    if (isError) {
-      navigate("/login");
-    }
-    // Si el usuario está logueado y NO es conductor, no lo deja entrar a esta página
-    if (user && user.rol !== "conductor") {
-      navigate("/login");
-    }
-  }, [isError, user, navigate]);
+  const buttons = (
+    <>
+      <Link to="/login">
+        <Button className="border border-white text-white">Login</Button>
+      </Link>
+      <Link to="/register">
+        <Button className="bg-white">Registrarse</Button>
+      </Link>
+    </>
+  );
 
   return (
-    <Layout>
+    <Layout buttons={buttons}>
       <div className='flex flex-row w-full h-full'>
         <div className='flex flex-col justify-center'>
           <div className='poppins-bold text-8xl text-white my-4 space-y-6'>
@@ -35,15 +25,15 @@ const Home = () => {
           </div>
           <div className='text-2xl poppins-regular my-4 text-white'>
             <p>Optimiza tu ruta, gestiona tus pasajeros y lleva el control total</p>
-            <p>de tu viaje en tiempo real.</p>
+            <p>de tu viaje.</p>
           </div>
-          <div className='absolute right-0 bottom-0'>
-            <img src={Nodos} alt="" />
-          </div>
+          <div className='absolute right-0 bottom-0 z-10 w-[40%] max-w-[600px]'>
+          <img src={Nodos} alt="Patrón decorativo" className="w-full h-auto" />
+        </div>
         </div>
       </div>
     </Layout>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

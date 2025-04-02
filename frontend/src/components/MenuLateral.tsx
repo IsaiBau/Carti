@@ -1,6 +1,9 @@
 import React from 'react';
 import Logo from '../assets/logo.svg';
-
+import { LogOut, reset } from "../features/authSlice";
+import { useDispatch} from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { AppDispatch } from "../app/store";
 interface MenuItem {
   icono: string;
   texto: string;
@@ -13,6 +16,13 @@ interface MenuLateralProps {
 }
 
 const MenuLateral: React.FC<MenuLateralProps> = ({ items, cerrarSesion }) => {
+  const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
+  const navigate = useNavigate();
+  const logout = () =>{
+      dispatch(LogOut());
+      dispatch(reset());
+      navigate("/login")
+  }
   return (
     <div className="bg h-screen justify-center text-left py-12 px-12 poppins-semibold text-white text-3xl">
       <div className="">
@@ -32,7 +42,7 @@ const MenuLateral: React.FC<MenuLateralProps> = ({ items, cerrarSesion }) => {
         <div className="">
           <div className="flex bottom-10 absolute">
             <img src={cerrarSesion.icono} alt="Ícono de cerrar sesión" />
-            <a href={cerrarSesion.ruta}>{cerrarSesion.texto}</a>
+            <a href={cerrarSesion.ruta} onClick={logout}>{cerrarSesion.texto}</a>
           </div>
         </div>
       )}

@@ -2,7 +2,10 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 interface User {
-    id: string;
+    id: number;
+    nombre: string;
+    apellido_pat: string;
+    apellido_mat: string;
     rfc: string;
     password: string;
     rol?: string; // Puedes ajustar los roles según tu lógica

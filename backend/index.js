@@ -15,7 +15,10 @@ import Viajes from "./models/ViajesModel.js";
 import RegistroLlegadas from "./models/RegistroLlegadasModel.js";
 //Importaciones de routes
 import TipoPersonaRoute from "./routes/TipoPersonasRoute.js"
+import RutasRoute from "./routes/RutasRoute.js";
 import AuthRoute from "./routes/AuthRoute.js"
+import UnidadesRoute from "./routes/UnidadesRoute.js"
+import ParadasRoute from "./routes/ParadasRoute.js"
 import dotenv from "dotenv"
 import PersonasRoute from "./routes/personasRoutes.js"; // Importa la ruta de personas
 import UnidadesRoutes from './routes/UnidadesRoutes.js'; // Importa la ruta de unidades
@@ -50,8 +53,9 @@ app.listen(process.env.APP_PORT, () => {
 // Rutas
 app.use(TipoPersonaRoute);
 app.use(AuthRoute);
-app.use(UnidadesRoutes);
-// app.use(personasRoutes)
+app.use(UnidadesRoute);
+app.use(ParadasRoute);
+app.use(RutasRoute);
 //Conexion con la base de datos
 app.use(PersonasRoute); // Usar las rutas de personas
 // Conexión con la base de datos
@@ -63,6 +67,7 @@ const store = new sessionStore({
     try {
         await db.sync();
         console.log('Base de datos sincronizada');
+        
     } catch (error) {
         console.error('Error al sincronizar la base de datos:', error);
     }

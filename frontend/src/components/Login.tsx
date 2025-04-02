@@ -22,7 +22,22 @@ const Login = () => {
 
     useEffect(() => {
         if (user || isSuccess) {
-            navigate("/tipo-personas");
+            switch(user?.rol) {
+                case 'conductor':
+                    navigate("/home-chofer");
+                    break;
+                case 'dueño':
+                    navigate("/panel-control");
+                    break;
+                case 'checador':
+                    navigate("/home-checador");
+                    break;
+                case 'admin':
+                    navigate("/dashboard"); // Si tienes ruta para admin
+                    break;
+                default:
+                    navigate("/"); // Ruta por defecto
+            }
         }
         dispatch(reset());
     }, [user, isSuccess, dispatch, navigate]);
