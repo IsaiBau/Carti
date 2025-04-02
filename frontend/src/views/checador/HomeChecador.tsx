@@ -92,6 +92,7 @@ const HomeChecador = () => {
         try {
             const response = await axios.get('http://localhost:5000/unidades');
             // Eliminar duplicados por número de unidad
+            /*
             const unidadesUnicas = response.data.reduce((acc: Unidad[], current: Unidad) => {
                 const x = acc.find(item => item.numero === current.numero);
                 if (!x) {
@@ -99,8 +100,8 @@ const HomeChecador = () => {
                 } else {
                     return acc;
                 }
-            }, []);
-            setUnidades(unidadesUnicas);
+            }, []);*/
+            setUnidades(response.data);
         } catch (error) {
             console.error('Error al obtener unidades:', error);
             mostrarMensaje('Error al obtener unidades', 'error');
@@ -140,7 +141,7 @@ const HomeChecador = () => {
             console.error('Error al obtener viaje activo:', error);
             setViajeActivo(null);
             setParadasRegistradas([]);
-            mostrarMensaje('Error al buscar viaje activo', 'error');
+            mostrarMensaje('No hay viaje activo para esta unidad', 'error');
         }
     };
 
@@ -185,7 +186,7 @@ const HomeChecador = () => {
             const response = await axios.post('http://localhost:5000/crear-registro', {
                 id_paradas: paradaSeleccionada.id_paradas,
                 id_personas: user?.id,
-                id_viajes: viajeActivo.id_viajes, // Asegúrate de usar id_viajes
+                id_unidad: unidadSeleccionada.id_unidades, // Asegúrate de usar id_viajes
                 pasajeros: pasajeros
             });
     

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Logo from '../../assets/logo.png'
 import Persona from '../../assets/person-1.png'
 import { LeaMap } from '../../components/Map'
@@ -12,9 +12,10 @@ const HomeChofer = () => {
     const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
     const navigate = useNavigate();
     const { isError, user } = useSelector((state: RootState) => state.auth);
-  
+   const [fechaActual, setFechaActual] = useState<string>('');
     useEffect(() => {
       dispatch(getMe());
+      setFechaActual(new Date().toISOString().split('T')[0]);
     }, [dispatch]);
   
     useEffect(() => {
@@ -51,7 +52,7 @@ const HomeChofer = () => {
                 <div className='space-y-3.5 flex flex-col'>
                     <p className='poppins-regular text-white text-8xl'>Tiempo para la siguiente parada:</p>
                     <div className='flex text-white poppins-bold text-3xl'>
-                        <p className='poppins-bold text-9xl'>09:45:23| </p>
+                        <p className='poppins-bold text-5xl'>{fechaActual}</p>
                         <div className='flex flex-col justify-center space-y-3 ml-3 mr-10 text-2xl'>                 
                             <p>Siguiente parada</p>
                             <p>Combi previa</p>
