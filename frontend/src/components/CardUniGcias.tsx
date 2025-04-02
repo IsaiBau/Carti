@@ -24,16 +24,7 @@ const Card: React.FC<CardListProps> = ({ today, day, numAndNameUni, revenue, exp
                     <p className='text-5xl'>{numAndNameUni}</p>
             </div>
         </div>
-        <div className='flex flex-col'>
-            <div className='flex'>
-                <img src={ArrowUp} alt="arrow" />
-                <span className='poppins-medium text-2xl text-[#059009] px-2'>${revenue}</span>
-            </div>
-            <div className='flex'>
-                 <img src={ArrowDown} alt="arrow" />
-                <span className='poppins-medium text-2xl text-[#F94E4E] px-2'>${expenses}</span>
-            </div>
-        </div>
+
     </div>
   );
 };

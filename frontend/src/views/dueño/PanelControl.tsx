@@ -190,7 +190,7 @@ useEffect(() => {
               <CardUnidadGanancia 
                 key={`${unidad.numero}-${unidad.placa}`}
                 today='HOY' 
-                day='09' 
+                day='02' 
                 numAndNameUni={`${unidad.numero} - ${unidad.choferes[0]?.nombre || 'Sin chofer'}`} 
                 revenue='12, 1212' 
                 expenses='500' 

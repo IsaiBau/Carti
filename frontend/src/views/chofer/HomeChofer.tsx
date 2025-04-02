@@ -6,7 +6,7 @@ import Card from '../../components/Card';
 import { AppDispatch, RootState } from '../../app/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getMe } from '../../features/authSlice';
+import { getMe, LogOut, reset } from '../../features/authSlice';
 import axios from 'axios';
 import { ParadasList } from '../../components/ParadasList';
 
@@ -40,6 +40,11 @@ interface Parada {
   nombre: string;
 }
 const HomeChofer = () => {
+    const logout = () =>{
+        dispatch(LogOut());
+        dispatch(reset());
+        navigate("/login")
+    }
     const dispatch: AppDispatch = useDispatch();
     const navigate = useNavigate();
     const { isError, user } = useSelector((state: RootState) => state.auth);
@@ -264,6 +269,12 @@ const getUltimaParada = async (id_viaje: number) => {
                   <li><img src={Logo} alt="logo" className='h-15'/></li>
                   <li>Inicio</li>
               </ul>
+              <button 
+                  onClick={logout}
+                  className='bg-red-500 hover:bg-red-600 text-white poppins-semibold px-4 py-2 rounded-lg transition-colors'
+              >
+                  Cerrar sesión
+              </button>
               <ul className='flex items-center space-x-1.5'>
                   <img src={Persona} alt="" />
                   <div>
