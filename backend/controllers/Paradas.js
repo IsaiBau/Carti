@@ -5,6 +5,7 @@ import RegistroLlegadas from "../models/RegistroLlegadasModel.js";
 import Viajes from "../models/ViajesModel.js";
 import Unidades from "../models/UnidadesModel.js";
 import ChoferUnidad from "../models/ChoferUnidadModel.js";
+import Rutas from "../models/RutasModel.js"
 export const getParadas = async(req, res) => {
     try {
         let response;
@@ -105,3 +106,17 @@ export const getViajeActivo = async(req, res) => {
         res.status(500).json({msg: error.message});
     }
 }
+
+export const getParadasByRuta = async (req, res) => {
+    const { id_ruta } = req.params;
+
+    try {
+        const paradas = await Paradas.findAll({
+            where: { id_rutas: id_ruta } // Filtras directamente por la relación sin incluir el atributo 'orden'.
+        });
+
+        res.status(200).json(paradas);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};

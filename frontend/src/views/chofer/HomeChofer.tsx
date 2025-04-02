@@ -78,18 +78,26 @@ const HomeChofer = () => {
         cargarDatosIniciales();
       }
     }, [user]);
-    useEffect(() => {
-      if (viajeActivo) {
-        getParadas(viajeActivo.id_rutas);
-        getParadasCompletadas(viajeActivo.id_viajes);
-        // Aquí podrías agregar lógica para determinar la parada actual
-        // Por ejemplo, podrías tener un endpoint que devuelva la última parada registrada
-      } else {
-        setParadas([]);
-        setParadasCompletadas([]);
-        setParadaActual(null);
-      }
-    }, [viajeActivo]);
+  
+// Modificar el useEffect que maneja viajeActivo
+useEffect(() => {
+  if (viajeActivo && rutaSeleccionada) {
+    getParadasRuta(viajeActivo.id_rutas);
+  } else {
+    setParadas([]);
+    setParadasCompletadas([]);
+  }
+}, [viajeActivo, rutaSeleccionada]);
+
+// Función para obtener última parada
+const getUltimaParada = async (id_viaje: number) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/ultima-parada/${id_viaje}`);
+    setParadaActual(response.data);
+  } catch (error) {
+    console.error('Error al obtener última parada:', error);
+  }
+};
     const cargarDatosIniciales = async () => {
       try {
         setCargando(true);
@@ -144,17 +152,10 @@ const HomeChofer = () => {
           if (response.data) {
               setViajeActivo(response.data);
               setRutaSeleccionada(rutas.find(r => r.id_rutas === response.data.id_rutas) || null);
+              setUnidadSeleccionada(unidades.find(u => u.id_unidades === response.data.chofer_unidad.id_unidades) || null);
           }
       } catch (error) {
           console.error('Error al obtener viaje activo:', error);
-      }
-    };
-    const getParadas = async (id_ruta: number) => {
-      try {
-        const response = await axios.get(`http://localhost:5000/paradas-ruta/${id_ruta}`);
-        setParadas(response.data);
-      } catch (error) {
-        console.error('Error al obtener paradas:', error);
       }
     };
     
@@ -167,13 +168,38 @@ const HomeChofer = () => {
         console.error('Error al obtener paradas completadas:', error);
       }
     };
+    const getParadasRuta = async (id_ruta: number) => {
+      try {
+        const response = await axios.get(`http://localhost:5000/paradas-ruta/${id_ruta}`);
+        
+        // Ordenar según si es vuelta o no
+        const esVuelta = rutaSeleccionada?.nombre.toLowerCase().includes('vuelta') || 
+                        rutaSeleccionada?.nombre.toLowerCase().includes('regreso');
+        
+        const paradasOrdenadas = esVuelta ? [...response.data].reverse() : response.data;
+        
+        setParadas(paradasOrdenadas);
+        
+        // Si hay viaje activo, actualizar las completadas
+        if (viajeActivo) {
+          await getParadasCompletadas(viajeActivo.id_viajes);
+        }
+      } catch (error) {
+        console.error('Error al obtener paradas:', error);
+      }
+    };
     
-    const handleRutaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    // Modificar handleRutaChange
+    const handleRutaChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
       const id = parseInt(e.target.value);
       const ruta = rutas.find(r => r.id_rutas === id);
       setRutaSeleccionada(ruta || null);
+      
+      if (ruta) {
+        await getParadasRuta(ruta.id_rutas);
+      }
     };
-
+    
     const handleUnidadChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const id = parseInt(e.target.value);
       const unidad = unidades.find(u => u.id_unidades === id);
@@ -308,7 +334,7 @@ const HomeChofer = () => {
                           </div> 
                       </div>
                   </div>
-                  
+                 
                   <div className='space-x-4 ml-auto pt-5'> {/* Cambiado este contenedor */}
                     {!viajeActivo ? (
                       <button 
@@ -331,7 +357,14 @@ const HomeChofer = () => {
               </div> 
               
           </div>
-    
+          {rutaSeleccionada && (
+    <ParadasList 
+      paradas={paradas}
+      paradasCompletadas={paradasCompletadas}
+   
+      esVuelta={rutaSeleccionada.nombre.toLowerCase().includes('vuelta')}
+    />
+  )}
           <div>
               <div>
               <Card title='' subtitle=''><LeaMap></LeaMap></Card>
