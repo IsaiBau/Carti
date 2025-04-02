@@ -18,6 +18,7 @@ import TipoPersonaRoute from "./routes/TipoPersonasRoute.js"
 import AuthRoute from "./routes/AuthRoute.js"
 import dotenv from "dotenv"
 import PersonasRoute from "./routes/personasRoutes.js"; // Importa la ruta de personas
+import UnidadesRoutes from './routes/UnidadesRoutes.js'; // Importa la ruta de unidades
 
 dotenv.config();
 
@@ -25,9 +26,11 @@ const app = express();
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'file-name', 'file-size']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'file-name', 'file-size', 'x-access-token']
 }));
+
+app.options('*', cors());
 
 app.use(session({
     secret: process.env.SESS_SECRET,
@@ -47,6 +50,8 @@ app.listen(process.env.APP_PORT, () => {
 // Rutas
 app.use(TipoPersonaRoute);
 app.use(AuthRoute);
+app.use(UnidadesRoutes);
+// app.use(personasRoutes)
 //Conexion con la base de datos
 app.use(PersonasRoute); // Usar las rutas de personas
 // Conexión con la base de datos

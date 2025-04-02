@@ -6,6 +6,8 @@ import Login from './components/Login';
 import Vista from "./views/vista";
 import TipoPersonas from './views/TipoPersonas';
 import PanelControl from './views/dueño/PanelControl';
+import Unidades from './views/dueño/Unidades';
+import UnidadesDetalles from './views/dueño/UnidadesDetalles';
 import EditarPersona from "./views/EditarPersona.js";
 import CrearPersona from "./components/Register.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,6 +48,8 @@ function App() {
         <Route path='/tipo-personas' element={<TipoPersonas/>}/>
         <Route path='/editar_persona' element={<EditarPersona/>}/>
         <Route path='/panel-de-control' element={<PanelControl/>}/>
+        <Route path='/unidades' element={<Unidades/>}/>
+        <Route path='/unidades-detalles' element={<UnidadesDetalles/>}/>
       </Routes>
     </>
   )
