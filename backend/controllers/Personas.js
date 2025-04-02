@@ -245,6 +245,22 @@ export const getAllDuenosTrabajadores = async (req, res) => {
     }
 };
 
+// En controllers/PersonasController.js
+export const getChoferes = async (req, res) => {
+    try {
+        const choferes = await Personas.findAll({
+            where: {
+                id_tipo_persona: 2, // Filtra solo choferes
+                activo: true
+            },
+            attributes: ['id', 'nombre', 'apellido_pat', 'apellido_mat']
+        });
+        res.status(200).json(choferes);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
 /*Codigo mas corto de la funcion anterior
 export const getAllDuenosTrabajadores = async (req, res) => {
     try {

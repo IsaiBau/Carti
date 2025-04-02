@@ -6,7 +6,8 @@ import {
     updatePersonas,
     deletePersonas,
     getTrabajadoresByDueno,
-    getAllDuenosTrabajadores
+    getAllDuenosTrabajadores,
+    getChoferes
 } from "../controllers/Personas.js";
 
 
@@ -19,5 +20,8 @@ router.get('/personas/:id', getPersonasById);
 router.post('/personas', createPersonas);
 router.patch('/personas/:id', updatePersonas);
 router.delete('/personas/:id', deletePersonas);
+// router.get('/personas/choferes', getChoferes);
 
+// Rutas específicas para choferes
+router.get('/tipo/choferes', getChoferes); // Cambiado a una ruta más específica
 export default router;
