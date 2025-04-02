@@ -13,11 +13,12 @@ import Select from '../../components/Select';
 import DatePicker from '../../components/DatePicker';
 import Checkbox from '../../components/Checkbox';
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { RootState, AppDispatch } from "../../app/store";
 import { getMe } from "../../features/authSlice";
+
 interface Chofer {
-  id:number;
+  id: number;
   uuid: string;
   nombre: string;
   apellido_pat: string;
@@ -36,35 +37,15 @@ interface Chofer {
 }
 
 const Choferes = () => {
-  const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
+  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const { isError, user } = useSelector((state: RootState) => state.auth);
 
-  useEffect(() => {
-    dispatch(getMe());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (isError) {
-      navigate("/login");
-    }
-    if (
-      user &&
-      user.rol !== "conductor" &&
-      user.rol !== "dueño" &&
-      user.rol !== "checador" &&
-      user.rol !== "admin" 
-    ) {
-      navigate("/login");
-    }
-  }, [isError, user, navigate]);
-console.log(user)
+  // Estados
   const [choferes, setChoferes] = useState<Chofer[]>([]);
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentId, setCurrentId] = useState<string | null>(null);
-  const userId = user?.id; 
-  // Estado del formulario
   const [formData, setFormData] = useState({
     nombre: '',
     apellido_pat: '',
@@ -74,38 +55,43 @@ console.log(user)
     rfc: '',
     sexo: true,
     password: '',
-    activo: true
+    activo: true,
+    id_tipo_persona: 2 // Tipo persona 2 = Chofer
   });
-  
   const [passwordConfirm, setPasswordConfirm] = useState('');
 
-  // Items del menu
-  const menuItems = [
-    { icono: IconMenu, texto: 'Panel', ruta: '/panel-control' },
-    { icono: IconUni, texto: 'Unidades', ruta: '/unidades' },
-    { icono: IconChof, texto: 'Choferes', ruta: '/choferes' },
-  ];
+  // Efectos
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
 
-  const cerrarSesion = { icono: IconCerrarSes, texto: 'Cerrar sesión', ruta: '/logout' };
+  useEffect(() => {
+    if (isError) {
+      navigate("/login");
+    }
+    if (user && !["conductor", "dueño", "checador", "admin"].includes(user.rol)) {
+      navigate("/login");
+    }
+    if (user?.id) {
+      fetchChoferes();
+    }
+  }, [isError, user, navigate]);
 
-console.log(userId)
-const fetchChoferes = async () => {
-  try {
-    setLoading(true);
-    const response = await axios.get(`http://localhost:5000/choferes/${user?.id}`);
-    setChoferes(response.data.trabajadores || []);
-  } catch (error) {
-    console.error('Error al cargar choferes:', error);
-  } finally {
-    setLoading(false);
-  }
-};
+  // Obtener choferes
+  const fetchChoferes = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:5000/choferes/${user?.id}`);
+      setChoferes(response.data.trabajadores || []);
+    } catch (error) {
+      console.error('Error al cargar choferes:', error);
+      alert('Error al cargar la lista de choferes');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-useEffect(() => {
-  if (user?.id) {
-    fetchChoferes();
-  }
-}, [user?.id]);
+  // Manejar cambios en el formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
@@ -120,13 +106,7 @@ useEffect(() => {
     });
   };
 
-  const handleDateChange = (date: string) => {
-    setFormData({
-      ...formData,
-      fecha_nac: date
-    });
-  };
-
+  // Validar formulario
   const validateForm = () => {
     const { nombre, apellido_pat, fecha_nac, curp, rfc, password } = formData;
 
@@ -158,6 +138,7 @@ useEffect(() => {
     return true;
   };
 
+  // Enviar formulario (crear/editar)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -166,16 +147,13 @@ useEffect(() => {
     setLoading(true);
 
     try {
-      const choferData = {
-        ...formData,
-        id_tipo_persona: 2 
-      };
-
       if (editMode && currentId) {
-        await axios.put(`http://localhost:5000/personas/${currentId}`, choferData);
+        // Editar chofer existente
+        await axios.patch(`http://localhost:5000/personas/${currentId}`, formData);
         alert('Chofer actualizado exitosamente');
       } else {
-        await axios.post('http://localhost:5000/personas', choferData);
+        // Crear nuevo chofer
+        await axios.post('http://localhost:5000/personas', formData);
         alert('Chofer creado exitosamente');
       }
 
@@ -183,12 +161,13 @@ useEffect(() => {
       fetchChoferes();
     } catch (error) {
       console.error('Error al guardar chofer:', error);
-      alert('Error al guardar el chofer');
+      alert('Error al guardar el chofer. Verifique la consola para más detalles.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Editar chofer
   const handleEdit = (chofer: Chofer) => {
     setFormData({
       nombre: chofer.nombre,
@@ -199,26 +178,34 @@ useEffect(() => {
       rfc: chofer.rfc,
       sexo: chofer.sexo,
       password: '',
-      activo: chofer.activo
+      activo: chofer.activo,
+      id_tipo_persona: 2
     });
     setCurrentId(chofer.uuid);
     setEditMode(true);
     setPasswordConfirm('');
   };
 
+  // Eliminar chofer
   const handleDelete = async (uuid: string) => {
-    if (window.confirm('¿Estás seguro de eliminar este chofer?')) {
-      try {
-        await axios.delete(`http://localhost:5000/personas/${uuid}`);
+    if (!window.confirm('¿Estás seguro de eliminar este chofer?')) return;
+
+    try {
+      const response = await axios.delete(`http://localhost:5000/personas/${uuid}`);
+      
+      if (response.status === 200) {
         alert('Chofer eliminado exitosamente');
         fetchChoferes();
-      } catch (error) {
-        console.error('Error al eliminar chofer:', error);
+      } else {
         alert('Error al eliminar el chofer');
       }
+    } catch (error) {
+      console.error('Error al eliminar chofer:', error);
+      alert('Error al eliminar el chofer. Verifique la consola para más detalles.');
     }
   };
 
+  // Resetear formulario
   const resetForm = () => {
     setFormData({
       nombre: '',
@@ -229,7 +216,8 @@ useEffect(() => {
       rfc: '',
       sexo: true,
       password: '',
-      activo: true
+      activo: true,
+      id_tipo_persona: 2
     });
     setPasswordConfirm('');
     setEditMode(false);
@@ -238,20 +226,33 @@ useEffect(() => {
 
   // Opciones para el select de sexo
   const sexoOptions = [
-    { value: true, label: 'Hombre' },
-    { value: false, label: 'Mujer' }
+    { value: 'true', label: 'Hombre' },
+    { value: 'false', label: 'Mujer' }
   ];
+
+  // Items del menu
+  const menuItems = [
+    { icono: IconMenu, texto: 'Panel', ruta: '/panel-control' },
+    { icono: IconUni, texto: 'Unidades', ruta: '/unidades' },
+    { icono: IconChof, texto: 'Choferes', ruta: '/choferes' },
+  ];
+
+  const cerrarSesion = { icono: IconCerrarSes, texto: 'Cerrar sesión', ruta: '/logout' };
 
   return (
     <div className="h-screen grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-4 bg-[#ECECEC]">
+      {/* Menú lateral */}
       <div className="row-span-2">
         <MenuLateral items={menuItems} cerrarSesion={cerrarSesion} />
       </div>
+
+      {/* Contenido principal */}
       <div className="col-start-2 row-start-1">
-        <NavBarPanel section='Choferes' name='Jose Salvador Sarao' email='josuesal@gmail.com' />
+        <NavBarPanel section='Choferes' name={user?.nombre || "Dueño"} email={user?.rfc || "0000000000"} />
       </div>
+
       <div className="col-start-2 row-start-2 p-4 overflow-y-auto">
-        {/* Sección para añadir/editar chofer */}
+        {/* Formulario de chofer */}
         <Card title={editMode ? "Editar chofer" : "Añadir un nuevo chofer"} className="mb-6">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
@@ -285,7 +286,7 @@ useEffect(() => {
                 label="Sexo" 
                 name="sexo"
                 options={sexoOptions} 
-                value={formData.sexo}
+                value={String(formData.sexo)}
                 onChange={(value) => setFormData({...formData, sexo: value === 'true'})}
                 required 
               />
@@ -293,7 +294,7 @@ useEffect(() => {
               <DatePicker 
                 label="Fecha de Nacimiento" 
                 value={formData.fecha_nac}
-                onChange={handleDateChange}
+                onChange={(date) => setFormData({...formData, fecha_nac: date})}
                 required 
               />
               
@@ -356,6 +357,7 @@ useEffect(() => {
                     type="button" 
                     variant="outline"
                     onClick={resetForm}
+                    disabled={loading}
                   >
                     Cancelar
                   </Button>
@@ -367,57 +369,66 @@ useEffect(() => {
 
         {/* Lista de choferes */}
         <Card title="Lista de choferes">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NOMBRE</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">APELLIDO PATERNO</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">APELLIDO MATERNO</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SEXO</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FECHA NAC.</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UNIDAD</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ESTADO</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACCIÓN</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {choferes.map((chofer) => (
-                  <tr key={chofer.uuid}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.nombre}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.apellido_pat}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.apellido_mat}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.sexo ? 'Hombre' : 'Mujer'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.fecha_nac}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {chofer.unidades?.reduce((acc, unidad) => acc ? `${acc}, ${unidad.numero}` : unidad.numero, '') || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        chofer.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
-                        {chofer.activo ? 'Activo' : 'Inactivo'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleEdit(chofer)}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleDelete(chofer.uuid)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Eliminar
-                      </button>
-                    </td>
+          {loading ? (
+            <p>Cargando choferes...</p>
+          ) : choferes.length === 0 ? (
+            <p>No hay choferes registrados</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NOMBRE</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">APELLIDO PATERNO</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">APELLIDO MATERNO</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SEXO</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FECHA NAC.</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UNIDAD</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ESTADO</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACCIÓN</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {choferes.map((chofer) => (
+                    <tr key={chofer.uuid}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.nombre}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.apellido_pat}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.apellido_mat}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.sexo ? 'Hombre' : 'Mujer'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{chofer.fecha_nac}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {chofer.unidades?.reduce((acc, unidad) => 
+                          acc ? `${acc}, ${unidad.numero}` : unidad.numero, '') || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          chofer.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {chofer.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => handleEdit(chofer)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                          disabled={loading}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => handleDelete(chofer.uuid)}
+                          className="text-red-600 hover:text-red-900"
+                          disabled={loading}
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </Card>
       </div>
     </div>

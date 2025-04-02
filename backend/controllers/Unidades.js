@@ -2,6 +2,20 @@ import Unidades from "../models/UnidadesModel.js";
 import { Sequelize, Op } from "sequelize";
 import ChoferUnidad from "../models/ChoferUnidadModel.js";
 import Personas from "../models/PersonasModel.js";
+
+export const getUnidades = async(req, res) => {
+    try {
+        let response;
+        response = await Unidades.findAll({
+            attributes:['id_unidades','uuid','id_personas','placa','numero'],
+        });
+        res.status(200).json(response);
+        //console.log(response) esto es para testear y mostrar en la consola
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 export const getUnidadesConChoferes = async (req, res) => {
     try {
         const duenoId = req.params.duenoId;

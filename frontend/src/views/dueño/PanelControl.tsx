@@ -11,7 +11,7 @@ import CardUltTrabajadores from '../../components/CardUltTrabajadores'
 import NavBarPanel from '../../components/NavBarPanel';
 import { AppDispatch, RootState } from '../../app/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getMe } from '../../features/authSlice';
 import axios from 'axios';
 
@@ -168,7 +168,11 @@ useEffect(() => {
               </div>
             )}
             <div className='flex flex-col items-end mt-5'>
-              <Button className='text-white bg-[#3290e7]'>Añadir</Button>
+              <Link to="/choferes">
+                <Button className="text-white bg-[#3290e7]">
+                  Añadir
+                </Button>
+              </Link>
             </div>
           </div>
         </Card>

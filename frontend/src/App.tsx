@@ -16,6 +16,7 @@ import Choferes from "./views/dueño/Chofer.js";
 import HomeChofer from "./views/chofer/HomeChofer.js";
 import { LeaMap } from "./components/Map.js";
 import HomeChecador from "./views/checador/HomeChecador.js";
+import AsignarChofer from "./views/dueño/AsignarChofer.js";
 
 function App() {
   const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
@@ -44,6 +45,7 @@ function App() {
     <>    
       <Routes>
         <Route path="/home" element={<Home/>}/>
+        <Route path="/asignar-chofer" element={<AsignarChofer/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path='/vista' element={<Vista/>}/>
         <Route path='/registrar' element={<CrearPersona/>}/>

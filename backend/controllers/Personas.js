@@ -117,7 +117,7 @@ export const getTrabajadoresByDueno = async (req, res) => {
         // 2. Obtener choferes con sus unidades (solo datos necesarios)
         const choferes = await Personas.findAll({
             where: { id_tipo_persona: 2 },
-            attributes: ['id', 'nombre', 'apellido_pat', 'apellido_mat', 'sexo', 'fecha_nac', 'curp', 'rfc', 'activo'],
+            attributes: ['id','uuid', 'nombre', 'apellido_pat', 'apellido_mat', 'sexo', 'fecha_nac', 'curp', 'rfc', 'activo'],
             include: [{
                 model: ChoferUnidad,
                 required: false,
@@ -132,6 +132,7 @@ export const getTrabajadoresByDueno = async (req, res) => {
         // 3. Formatear respuesta limpia
         const resultado = choferes.map(chofer => ({
             id: chofer.id,
+            uuid: chofer.uuid,
             nombre: chofer.nombre,
             apellido_pat: chofer.apellido_pat,
             apellido_mat: chofer.apellido_mat,

@@ -1,8 +1,36 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Logo from '../../assets/logo.png'
 import Persona from '../../assets/person-1.png'
+import { LeaMap } from '../../components/Map'
+import Card from '../../components/Card'
+import { AppDispatch, RootState } from '../../app/store'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { getMe } from '../../features/authSlice'
 
 const HomeChofer = () => {
+    const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
+    const navigate = useNavigate();
+    const { isError, user } = useSelector((state: RootState) => state.auth);
+  
+    useEffect(() => {
+      dispatch(getMe());
+    }, [dispatch]);
+  
+    useEffect(() => {
+      if (isError) {
+        navigate("/login");
+      }
+      if (
+        user &&
+        user.rol !== "conductor" &&
+        user.rol !== "dueño" &&
+        user.rol !== "checador" &&
+        user.rol !== "admin" 
+      ) {
+        navigate("/login");
+      }
+    }, [isError, user, navigate]);
   return (
     <div className='h-[100vh] bg-[#ECECEC]'>
         <nav className='flex justify-between p-10 items-center'>
@@ -13,8 +41,8 @@ const HomeChofer = () => {
             <ul className='flex items-center space-x-1.5'>
                 <img src={Persona} alt="" />
                 <div>
-                    <p className='poppins-semibold'>Pepe Aguilar</p>
-                    <p>pepeaguilar@gmail.com</p>
+                <p className='poppins-semibold'>{user?.nombre || "Chofer"} </p>
+                <p>{user?.rfc || "0000000000"}</p>
                 </div>
             </ul>
         </nav>
@@ -40,7 +68,7 @@ const HomeChofer = () => {
         </div>
         <div>
             <div>
-                
+            <Card  title='' subtitle=''><LeaMap></LeaMap></Card>
             </div>
         </div>
     </div>
