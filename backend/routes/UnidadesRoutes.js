@@ -7,7 +7,7 @@ import {
 
 const router = express.Router();
 
-router.get('/unidades', getUnidadesConChoferes);
+router.get('/unidades-choferes', getUnidadesConChoferes);
 router.post('/crearUnidad', createUnidad);
 router.delete('/unidades/:id', deleteUnidad);
 

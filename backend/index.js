@@ -56,6 +56,7 @@ app.use(AuthRoute);
 app.use(UnidadesRoute);
 app.use(ParadasRoute);
 app.use(RutasRoute);
+app.use(UnidadesRoutes);
 //Conexion con la base de datos
 app.use(PersonasRoute); // Usar las rutas de personas
 // Conexión con la base de datos
