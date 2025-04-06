@@ -9,8 +9,8 @@ const Home = () => {
       <Link to="/login">
         <Button className="border border-white text-white">Login</Button>
       </Link>
-      <Link to="/register">
-        <Button className="bg-white">Registrarse</Button>
+      <Link to="/vista">
+        <Button className="bg-white">Ver mapa</Button>
       </Link>
     </>
   );

@@ -31,7 +31,7 @@ function App() {
 
   useEffect(() => {
     // Lista de rutas públicas que no requieren autenticación
-    const publicPaths = ['/', '/login', '/navbar'];
+    const publicPaths = ['/', '/login', '/navbar', '/vista'];
     const currentPath = window.location.pathname;
 
     // Si no estamos en una ruta pública y hay error de autenticación, redirigir a login
@@ -60,8 +60,9 @@ function App() {
         <Route path="/" element={<Home/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path='/navbar' element={<NavBar/>}/>
-        {/* Rutas protegidas */}
         <Route path='/vista' element={<Vista/>}/>
+        {/* Rutas protegidas */}
+     
         <Route path='/registrar' element={<CrearPersona/>}/>
         <Route path='/tipo-personas' element={<TipoPersonas/>}/>
         <Route path='/editar_persona' element={<EditarPersona/>}/>
