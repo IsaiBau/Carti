@@ -129,7 +129,7 @@ const Unidades = () => {
   useEffect(() => {
     const fetchUnidades = async () => {
       try {
-        const response = await fetch("http://localhost:5000/unidades-choferes");
+        const response = await fetch("https://localhost:5000/unidades-choferes");
         if (!response.ok) throw new Error("Error al cargar unidades");
         const data = await response.json();
 
@@ -156,7 +156,7 @@ const Unidades = () => {
   useEffect(() => {
     const fetchChoferes = async () => {
       try {
-        const response = await fetch("http://localhost:5000/tipo/choferes");
+        const response = await fetch("https://localhost:5000/tipo/choferes");
 
         if (!response.ok) {
           throw new Error(`Error HTTP! estado: ${response.status}`);
@@ -183,7 +183,7 @@ const Unidades = () => {
     setSuccess(false);
 
     try {
-      const response = await fetch("http://localhost:5000/crearUnidad", {
+      const response = await fetch("https://localhost:5000/crearUnidad", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -206,7 +206,7 @@ const Unidades = () => {
       setFormData({ placa: "", numero: "", id_personas: "" });
 
       // Actualizar la lista de unidades
-      const unidadesResponse = await fetch("http://localhost:5000/unidades-choferes");
+      const unidadesResponse = await fetch("https://localhost:5000/unidades-choferes");
       const unidadesData = await unidadesResponse.json();
       setUnidades(unidadesData);
     } catch (err) {

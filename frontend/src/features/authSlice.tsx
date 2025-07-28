@@ -34,7 +34,7 @@ export const LoginUser = createAsyncThunk<
     { rejectValue: string } // Tipo del error que se retorna
 >("user/LoginUser", async (user, thunkAPI) => {
     try {
-        const response = await axios.post("http://localhost:5000/login", {
+        const response = await axios.post("https://localhost:5000/login", {
             rfc: user.rfc,
             password: user.password
         });
@@ -55,7 +55,7 @@ export const getMe = createAsyncThunk<
     { rejectValue: string } // Tipo del error
 >("user/getMe", async (_, thunkAPI) => {
     try {
-        const response = await axios.get("http://localhost:5000/me");
+        const response = await axios.get("https://localhost:5000/me");
         return response.data;
     } catch (error: any) {
         if (error.response) {
@@ -68,7 +68,7 @@ export const getMe = createAsyncThunk<
 
 // Función que destruye la sesión del usuario, cerrar sesión
 export const LogOut = createAsyncThunk<void>("user/LogOut", async () => {
-    await axios.delete("http://localhost:5000/logout");
+    await axios.delete("https://localhost:5000/logout");
 });
 
 export const authSlice = createSlice({

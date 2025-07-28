@@ -70,7 +70,7 @@ const EditarPersona: React.FC = () => {
   useEffect(() => {
     const fetchTiposPersona = async () => {
       try {
-        const response = await axios.get<TipoPersona[]>('http://localhost:5000/tipo-personas');
+        const response = await axios.get<TipoPersona[]>('https://localhost:5000/tipo-personas');
         setTiposPersona(response.data);
         console.log('Tipos de persona cargados:', response.data);
       } catch (error) {
@@ -86,7 +86,7 @@ const EditarPersona: React.FC = () => {
   useEffect(() => {
     const fetchPersonas = async () => {
       try {
-        const response = await axios.get<Persona[]>('http://localhost:5000/personas');
+        const response = await axios.get<Persona[]>('https://localhost:5000/personas');
         setPersonas(response.data);
       } catch (error) {
         console.error('Error al cargar las personas:', error);
@@ -101,7 +101,7 @@ const EditarPersona: React.FC = () => {
   useEffect(() => {
     const fetchPersona = async () => {
       try {
-        const response = await axios.get<Persona>(`http://localhost:5000/personas/${uuid}`);
+        const response = await axios.get<Persona>(`https://localhost:5000/personas/${uuid}`);
         setFormData(response.data);
       } catch (error) {
         console.error('Error al cargar la persona:', error);
@@ -185,11 +185,11 @@ const EditarPersona: React.FC = () => {
     setSuccessMsg('');
 
     try {
-      await axios.patch(`http://localhost:5000/personas/${formData.uuid}`, formData);
+      await axios.patch(`https://localhost:5000/personas/${formData.uuid}`, formData);
       setSuccessMsg('Persona actualizada exitosamente.');
 
       // Actualizar la lista de personas después de guardar
-      const response = await axios.get<Persona[]>('http://localhost:5000/personas');
+      const response = await axios.get<Persona[]>('https://localhost:5000/personas');
       setPersonas(response.data);
     } catch (error: any) {
       setErrorMsg(error.response?.data?.msg || 'Error al actualizar persona.');
@@ -204,7 +204,7 @@ const EditarPersona: React.FC = () => {
     if (window.confirm('¿Estás seguro de que deseas eliminar esta persona?')) {
       try {
         setLoading(true);
-        await axios.delete(`http://localhost:5000/personas/${uuid}`);
+        await axios.delete(`https://localhost:5000/personas/${uuid}`);
         setSuccessMsg('Persona eliminada exitosamente.');
         setPersonas(personas.filter(persona => persona.uuid !== uuid));
       } catch (error: any) {

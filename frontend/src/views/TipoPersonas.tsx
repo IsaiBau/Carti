@@ -26,7 +26,7 @@ const Personas: React.FC = () => {
 
   const getTipoPersonas = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/tipo-personas");
+      const response = await axios.get("https://localhost:5000/tipo-personas");
       setTipoPersonas(response.data);
     } catch (error: any) {
       setMsg(error.response.data.msg);
@@ -39,7 +39,7 @@ const Personas: React.FC = () => {
       return;
     }
     axios
-      .post("http://localhost:5000/tipo-personas", { nombre, descripcion, activo })
+      .post("https://localhost:5000/tipo-personas", { nombre, descripcion, activo })
       .then(() => {
         getTipoPersonas();
         cancelar();
@@ -59,7 +59,7 @@ const Personas: React.FC = () => {
 
   const deleteTipoPersona = async (toggleModal: () => void, row: { uuid: string;}) => {
     try {
-      await axios.delete(`http://localhost:5000/tipo-personas/${row.uuid}`);
+      await axios.delete(`https://localhost:5000/tipo-personas/${row.uuid}`);
       getTipoPersonas();
       toggleModal(); 
     } catch (error: any) {
@@ -82,7 +82,7 @@ const Personas: React.FC = () => {
   const updateTipoPersona = async () => {
     if (!uuid) return;
     try {
-      await axios.patch(`http://localhost:5000/tipo-personas/${uuid}`, { nombre, descripcion, activo });
+      await axios.patch(`https://localhost:5000/tipo-personas/${uuid}`, { nombre, descripcion, activo });
       getTipoPersonas();
       cancelar();
     } catch (error: any) {
