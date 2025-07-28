@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 axios.defaults.withCredentials = true;
+
 interface User {
     id: number;
     nombre: string;
@@ -8,7 +9,9 @@ interface User {
     apellido_mat: string;
     rfc: string;
     password: string;
-    rol?: string; // Puedes ajustar los roles según tu lógica
+    email?: string; // Añadido para Google Auth
+    uid?: string;   // Añadido para Google Auth
+    rol?: string;
 }
 
 interface AuthState {
@@ -29,9 +32,9 @@ const initialState: AuthState = {
 
 // Función para loguear al usuario
 export const LoginUser = createAsyncThunk<
-    User, // Tipo de dato que retorna la función (el usuario)
-    { rfc: string; password: string; }, // Tipo de argumento que acepta
-    { rejectValue: string } // Tipo del error que se retorna
+    User,
+    { rfc: string; password: string; },
+    { rejectValue: string }
 >("user/LoginUser", async (user, thunkAPI) => {
     try {
         const response = await axios.post("https://localhost:5000/login", {
@@ -44,18 +47,23 @@ export const LoginUser = createAsyncThunk<
             const message = error.response.data.msg;
             return thunkAPI.rejectWithValue(message);
         }
-        throw error; // Arroja cualquier otro error desconocido
+        throw error;
     }
 });
 
-// Función que obtiene los datos del usuario que está logueado
-export const getMe = createAsyncThunk<
-    User, // Tipo del dato retornado
-    void, // No recibe parámetros
-    { rejectValue: string } // Tipo del error
->("user/getMe", async (_, thunkAPI) => {
+// Función para login con Google
+export const LoginWithGoogle = createAsyncThunk<
+    User,
+    { token: string; email: string; name: string; uid: string },
+    { rejectValue: string }
+>("user/LoginWithGoogle", async (userData, thunkAPI) => {
     try {
-        const response = await axios.get("https://localhost:5000/me");
+        const response = await axios.post("https://localhost:5000/google-auth", {
+            token: userData.token,
+            email: userData.email,
+            name: userData.name,
+            uid: userData.uid
+        });
         return response.data;
     } catch (error: any) {
         if (error.response) {
@@ -66,7 +74,24 @@ export const getMe = createAsyncThunk<
     }
 });
 
-// Función que destruye la sesión del usuario, cerrar sesión
+// Función que obtiene los datos del usuario
+export const getMe = createAsyncThunk<User, void, { rejectValue: string }>(
+    "user/getMe",
+    async (_, thunkAPI) => {
+        try {
+            const response = await axios.get("http://localhost:5000/me");
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                const message = error.response.data.msg;
+                return thunkAPI.rejectWithValue(message);
+            }
+            throw error;
+        }
+    }
+);
+
+// Función para cerrar sesión
 export const LogOut = createAsyncThunk<void>("user/LogOut", async () => {
     await axios.delete("https://localhost:5000/logout");
 });
@@ -78,8 +103,14 @@ export const authSlice = createSlice({
         reset: (state) => {
             return initialState;
         },
+        // Añade este reducer para setUser temporal
+        setTempUser: (state, action: PayloadAction<User>) => {
+            state.user = action.payload;
+            state.isSuccess = true;
+        }
     },
     extraReducers: (builder) => {
+        // Login normal
         builder.addCase(LoginUser.pending, (state) => {
             state.isLoading = true;
         });
@@ -88,10 +119,25 @@ export const authSlice = createSlice({
             state.isSuccess = true;
             state.user = action.payload;
         });
-        builder.addCase(LoginUser.rejected, (state, action: PayloadAction<string | undefined>) => {
+        builder.addCase(LoginUser.rejected, (state, action) => {
             state.isLoading = false;
             state.isError = true;
-            state.message = action.payload || "An error occurred";
+            state.message = action.payload || "Error desconocido";
+        });
+
+        // Login con Google
+        builder.addCase(LoginWithGoogle.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(LoginWithGoogle.fulfilled, (state, action: PayloadAction<User>) => {
+            state.isLoading = false;
+            state.isSuccess = true;
+            state.user = action.payload;
+        });
+        builder.addCase(LoginWithGoogle.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isError = true;
+            state.message = action.payload || "Error con Google Auth";
         });
 
         // Get User Login
@@ -103,13 +149,18 @@ export const authSlice = createSlice({
             state.isSuccess = true;
             state.user = action.payload;
         });
-        builder.addCase(getMe.rejected, (state, action: PayloadAction<string | undefined>) => {
+        builder.addCase(getMe.rejected, (state, action) => {
             state.isLoading = false;
             state.isError = true;
-            state.message = action.payload || "An error occurred";
+            state.message = action.payload || "Error al obtener usuario";
+        });
+
+        // Logout
+        builder.addCase(LogOut.fulfilled, () => {
+            return initialState;
         });
     },
 });
 
-export const { reset } = authSlice.actions;
+export const { reset, setTempUser } = authSlice.actions;
 export default authSlice.reducer;

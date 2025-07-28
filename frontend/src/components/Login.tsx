@@ -6,45 +6,100 @@ import Nodo2 from '../assets/nodo2.png';
 import Input from '../components/Input';
 import { FaRegIdBadge } from "react-icons/fa6";
 import { FaRegAddressCard } from 'react-icons/fa6';
+import { FcGoogle } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { LoginUser, reset } from "../features/authSlice";
-import { RootState, AppDispatch } from "../app/store"; // Importa RootState y AppDispatch
+import { RootState, AppDispatch } from "../app/store";
+import { auth, googleProvider, signInWithPopup } from '../firebase';
 
 const Login = () => {
     const [password, setPassword] = useState<string>("");
     const [rfc, setRfc] = useState<string>("");
-    const dispatch: AppDispatch = useDispatch(); // Tipa dispatch con AppDispatch
+    const [googleLoading, setGoogleLoading] = useState<boolean>(false);
+    const dispatch: AppDispatch = useDispatch();
     const navigate = useNavigate();
     const { user, isError, isSuccess, isLoading, message } = useSelector(
-        (state: RootState) => state.auth // Tipa el estado con RootState
+        (state: RootState) => state.auth
     );
 
+    // Efecto para redirección normal (con credenciales)
     useEffect(() => {
         if (user || isSuccess) {
-            switch(user?.rol) {
-                case 'conductor':
-                    navigate("/home-chofer");
-                    break;
-                case 'dueño':
-                    navigate("/panel-control");
-                    break;
-                case 'checador':
-                    navigate("/home-checador");
-                    break;
-                case 'admin':
-                    navigate("/dashboard"); // Si tienes ruta para admin
-                    break;
-                default:
-                    navigate("/"); // Ruta por defecto
-            }
+            handleRedirection(user?.rol);
         }
         dispatch(reset());
     }, [user, isSuccess, dispatch, navigate]);
 
+    // Función para manejar todas las redirecciones
+    const handleRedirection = (role?: string) => {
+        switch(role) {
+            case 'conductor':
+                navigate("/home-chofer");
+                break;
+            case 'dueño':
+                navigate("/panel-control");
+                break;
+            case 'checador':
+                navigate("/home-checador");
+                break;
+            case 'admin':
+                navigate("/dashboard");
+                break;
+            default:
+                // Redirección ficticia para usuarios de Google
+                // Puedes cambiarlo a la ruta que prefieras
+                navigate("/panel-control"); 
+        }
+    };
+
     const Auth = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(LoginUser({ rfc,password })); // Asegúrate de pasar un objeto con la estructura correcta
+        dispatch(LoginUser({ rfc, password }));
+    };
+
+    // Función mejorada para inicio con Google
+    const signInWithGoogle = async () => {
+        try {
+            setGoogleLoading(true);
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            
+            console.log("Usuario de Google:", {
+                email: user.email,
+                uid: user.uid,
+                displayName: user.displayName
+            });
+
+            // Opción 1: Redirección directa (ficticia)
+            handleRedirection('dueño'); // Forzamos rol de dueño para el ejemplo
+            
+            // Opción 2: Si necesitas enviar datos al backend primero:
+            /*
+            const response = await fetch('/api/google-auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    token: await user.getIdToken(),
+                    email: user.email,
+                    name: user.displayName
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                handleRedirection(data.role);
+            } else {
+                throw new Error('Error en el servidor');
+            }
+            */
+            
+        } catch (error: any) {
+            console.error("Error completo:", error);
+            alert(`Error al iniciar con Google: ${error.message}`);
+        } finally {
+            setGoogleLoading(false);
+        }
     };
 
     return (
@@ -54,20 +109,17 @@ const Login = () => {
                     <img src={Logo} alt="LOGO" />
                     <div className='flex flex-col w-md'>
                         <p className='poppins-bold text-[34px]'>Iniciar sesión<b className='poppins-semibold text-6xl text-[#2787E0]'>.</b></p>
-                        <p className='poppins-regular text-[#8B8B8B] flex justify-start'>{isError && <span>{message}</span>} {/* Usa <span> en lugar de <p> */}</p>
+                        <p className='poppins-regular text-[#8B8B8B] flex justify-start'>{isError && <span>{message}</span>}</p>
                         <div className='pt-10 w-full'>
                             <form onSubmit={Auth}>
-                                {/* Input Nombre */}
                                 <Input
                                     name="rfc"
                                     placeholder='RFC'
                                     icon={FaRegAddressCard}
                                     value={rfc}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRfc(e.target.value)}
-                                >
-                                </Input>
+                                />
 
-                                {/* Input CURP y RFC */}
                                 <div className='my-2 grid gap-4 grid-cols-2'>
                                     <div className='col-span-2 sm:col-span-1'>
                                         <Input
@@ -77,16 +129,32 @@ const Login = () => {
                                             icon={FaRegIdBadge}
                                             value={password}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                                        >
-                                        </Input>
+                                        />
                                     </div>
                                 </div>
 
-                                {/* Boton */}
                                 <button className='poppins-semibold text-white bg-[#2787E0] w-full h-[50px] rounded-[7px] my-3 cursor-pointer input-transition hover:bg-[#276ee0]'>
                                     {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
                                 </button>
                             </form>
+                            
+                            <div className="relative my-4">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="px-2 bg-white text-gray-500">O continúa con</span>
+                                </div>
+                            </div>
+                            
+                            <button 
+                                onClick={signInWithGoogle}
+                                disabled={googleLoading}
+                                className="flex items-center justify-center w-full gap-2 poppins-semibold text-gray-700 bg-white border border-gray-300 rounded-[7px] h-[50px] my-3 cursor-pointer hover:bg-gray-50 disabled:opacity-70"
+                            >
+                                <FcGoogle className="text-xl" />
+                                {googleLoading ? 'Procesando...' : 'Iniciar con Google'}
+                            </button>
                         </div>
                     </div>
                 </div>
