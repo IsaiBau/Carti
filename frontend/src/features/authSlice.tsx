@@ -37,7 +37,7 @@ export const LoginUser = createAsyncThunk<
     { rejectValue: string }
 >("user/LoginUser", async (user, thunkAPI) => {
     try {
-        const response = await axios.post("http://localhost:5000/login", {
+        const response = await axios.post("https://localhost:5000/login", {
             rfc: user.rfc,
             password: user.password
         });
@@ -58,7 +58,7 @@ export const LoginWithGoogle = createAsyncThunk<
     { rejectValue: string }
 >("user/LoginWithGoogle", async (userData, thunkAPI) => {
     try {
-        const response = await axios.post("http://localhost:5000/google-auth", {
+        const response = await axios.post("https://localhost:5000/google-auth", {
             token: userData.token,
             email: userData.email,
             name: userData.name,
@@ -93,7 +93,7 @@ export const getMe = createAsyncThunk<User, void, { rejectValue: string }>(
 
 // Función para cerrar sesión
 export const LogOut = createAsyncThunk<void>("user/LogOut", async () => {
-    await axios.delete("http://localhost:5000/logout");
+    await axios.delete("https://localhost:5000/logout");
 });
 
 export const authSlice = createSlice({

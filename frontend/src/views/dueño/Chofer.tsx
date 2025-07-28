@@ -81,7 +81,7 @@ const Choferes = () => {
   const fetchChoferes = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/choferes/${user?.id}`);
+      const response = await axios.get(`https://localhost:5000/choferes/${user?.id}`);
       setChoferes(response.data.trabajadores || []);
     } catch (error) {
       console.error('Error al cargar choferes:', error);
@@ -149,11 +149,11 @@ const Choferes = () => {
     try {
       if (editMode && currentId) {
         // Editar chofer existente
-        await axios.patch(`http://localhost:5000/personas/${currentId}`, formData);
+        await axios.patch(`https://localhost:5000/personas/${currentId}`, formData);
         alert('Chofer actualizado exitosamente');
       } else {
         // Crear nuevo chofer
-        await axios.post('http://localhost:5000/personas', formData);
+        await axios.post('https://localhost:5000/personas', formData);
         alert('Chofer creado exitosamente');
       }
 
@@ -191,7 +191,7 @@ const Choferes = () => {
     if (!window.confirm('¿Estás seguro de eliminar este chofer?')) return;
 
     try {
-      const response = await axios.delete(`http://localhost:5000/personas/${uuid}`);
+      const response = await axios.delete(`https://localhost:5000/personas/${uuid}`);
       
       if (response.status === 200) {
         alert('Chofer eliminado exitosamente');

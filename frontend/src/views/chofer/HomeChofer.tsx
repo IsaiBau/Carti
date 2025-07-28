@@ -97,7 +97,7 @@ useEffect(() => {
 // Función para obtener última parada
 const getUltimaParada = async (id_viaje: number) => {
   try {
-    const response = await axios.get(`http://localhost:5000/ultima-parada/${id_viaje}`);
+    const response = await axios.get(`https://localhost:5000/ultima-parada/${id_viaje}`);
     setParadaActual(response.data);
   } catch (error) {
     console.error('Error al obtener última parada:', error);
@@ -125,7 +125,7 @@ const getUltimaParada = async (id_viaje: number) => {
 
     const getRutas = async () => {
       try {
-          const response = await axios.get('http://localhost:5000/rutas');
+          const response = await axios.get('https://localhost:5000/rutas');
           setRutas(response.data);
       } catch (error) {
           console.error('Error al obtener rutas:', error);
@@ -137,7 +137,7 @@ const getUltimaParada = async (id_viaje: number) => {
       try {
           if (!user?.id) return;
           
-          const response = await axios.get(`http://localhost:5000/unidades-chofer/${user.id}`);
+          const response = await axios.get(`https://localhost:5000/unidades-chofer/${user.id}`);
           if (response.data && response.data.length > 0) {
             setUnidades(response.data);
           } else {
@@ -153,7 +153,7 @@ const getUltimaParada = async (id_viaje: number) => {
       try {
           if (!user?.id) return;
           
-          const response = await axios.get(`http://localhost:5000/viaje-activo-chofer/${user.id}`);
+          const response = await axios.get(`https://localhost:5000/viaje-activo-chofer/${user.id}`);
           if (response.data) {
               setViajeActivo(response.data);
               setRutaSeleccionada(rutas.find(r => r.id_rutas === response.data.id_rutas) || null);
@@ -167,7 +167,7 @@ const getUltimaParada = async (id_viaje: number) => {
     // Agregar esta función para cargar paradas completadas
     const getParadasCompletadas = async (id_viaje: number) => {
       try {
-        const response = await axios.get(`http://localhost:5000/paradas-registradas/${id_viaje}`);
+        const response = await axios.get(`https://localhost:5000/paradas-registradas/${id_viaje}`);
         setParadasCompletadas(response.data.map((p: any) => p.id_paradas));
       } catch (error) {
         console.error('Error al obtener paradas completadas:', error);
@@ -175,7 +175,7 @@ const getUltimaParada = async (id_viaje: number) => {
     };
     const getParadasRuta = async (id_ruta: number) => {
       try {
-        const response = await axios.get(`http://localhost:5000/paradas-ruta/${id_ruta}`);
+        const response = await axios.get(`https://localhost:5000/paradas-ruta/${id_ruta}`);
         
         // Ordenar según si es vuelta o no
         const esVuelta = rutaSeleccionada?.nombre.toLowerCase().includes('vuelta') || 
@@ -220,7 +220,7 @@ const getUltimaParada = async (id_viaje: number) => {
       try {
           // Obtener el id_chofer_unidad
           const response = await axios.get(
-              `http://localhost:5000/chofer-unidad/${user.id}/${unidadSeleccionada.id_unidades}`
+              `https://localhost:5000/chofer-unidad/${user.id}/${unidadSeleccionada.id_unidades}`
           );
 
           if (!response.data) {
@@ -229,7 +229,7 @@ const getUltimaParada = async (id_viaje: number) => {
           }
 
           // Crear el nuevo viaje
-          const viajeResponse = await axios.post('http://localhost:5000/iniciar-viaje', {
+          const viajeResponse = await axios.post('https://localhost:5000/iniciar-viaje', {
               id_rutas: rutaSeleccionada.id_rutas,
               id_chofer_unidad: response.data.id_chofer_unidad
           });
@@ -247,7 +247,7 @@ const getUltimaParada = async (id_viaje: number) => {
       if (!viajeActivo) return;
 
       try {
-          await axios.put(`http://localhost:5000/finalizar-viaje/${viajeActivo.id_viajes}`);
+          await axios.put(`https://localhost:5000/finalizar-viaje/${viajeActivo.id_viajes}`);
           setViajeActivo(null);
           setUnidadSeleccionada(null);
           mostrarMensaje('Viaje finalizado correctamente', 'exito');

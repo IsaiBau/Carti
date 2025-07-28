@@ -95,7 +95,7 @@ const HomeChecador = () => {
 
     const getUnidades = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/unidades');
+            const response = await axios.get('https://localhost:5000/unidades');
             // Eliminar duplicados por número de unidad
             /*
             const unidadesUnicas = response.data.reduce((acc: Unidad[], current: Unidad) => {
@@ -115,7 +115,7 @@ const HomeChecador = () => {
 
     const getParadas = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/paradas');
+            const response = await axios.get('https://localhost:5000/paradas');
             setParadas(response.data);
         } catch (error) {
             console.error('Error al obtener paradas:', error);
@@ -126,14 +126,14 @@ const HomeChecador = () => {
     const getViajeActivo = async (idUnidad: number) => {
         try {
             console.log(`Buscando viaje activo para unidad ${idUnidad}`);
-            const response = await axios.get(`http://localhost:5000/viaje-activo/${idUnidad}`);
+            const response = await axios.get(`https://localhost:5000/viaje-activo/${idUnidad}`);
             console.log('Respuesta de viaje activo:', response.data);
             
             if (response.data) {
                 setViajeActivo(response.data);
                 
                 // Obtener paradas ya registradas para este viaje
-                const resParadas = await axios.get(`http://localhost:5000/paradas-registradas/${response.data.id_viajes}`);
+                const resParadas = await axios.get(`https://localhost:5000/paradas-registradas/${response.data.id_viajes}`);
                 setParadasRegistradas(resParadas.data.map((p: any) => p.id_paradas));
                 
                 mostrarMensaje('Viaje activo encontrado', 'exito');
@@ -188,7 +188,7 @@ const HomeChecador = () => {
         }
     
         try {
-            const response = await axios.post('http://localhost:5000/crear-registro', {
+            const response = await axios.post('https://localhost:5000/crear-registro', {
                 id_paradas: paradaSeleccionada.id_paradas,
                 id_personas: user?.id,
                 id_unidad: unidadSeleccionada.id_unidades, // Asegúrate de usar id_viajes

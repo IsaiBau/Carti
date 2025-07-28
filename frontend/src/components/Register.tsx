@@ -56,7 +56,7 @@ const CrearPersona: React.FC = () => {
   useEffect(() => {
     const fetchTiposPersona = async () => {
       try {
-        const response = await axios.get<TipoPersona[]>('http://localhost:5000/tipo-personas');
+        const response = await axios.get<TipoPersona[]>('https://localhost:5000/tipo-personas');
         setTiposPersona(response.data);
         console.log('Tipos de persona cargados:', response.data);
       } catch (error) {
@@ -145,7 +145,7 @@ const CrearPersona: React.FC = () => {
         return;
     }
     try {
-      const response = await axios.post('http://localhost:5000/personas', formData);
+      const response = await axios.post('https://localhost:5000/personas', formData);
       setSuccessMsg('Persona creada exitosamente.');
       console.log('Persona creada:', response.data);
 

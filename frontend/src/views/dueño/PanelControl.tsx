@@ -81,7 +81,7 @@ const PanelControl = () => {
     try {
       setLoading(true);
       const response = await axios.get<{ trabajadores: Chofer[] }>(
-        `http://localhost:5000/choferes/${user?.id}`
+        `https://localhost:5000/choferes/${user?.id}`
       );
   
       // Tomar los últimos 3 elementos del array (sin ordenar)
@@ -119,7 +119,7 @@ const PanelControl = () => {
       setErrorUnidades(null);
       
       const response = await axios.get<{ unidades: UnidadConChofer[] }>(
-        `http://localhost:5000/unidades-choferes/${user?.id}`
+        `https://localhost:5000/unidades-choferes/${user?.id}`
       );
       
       setUnidades(response.data.unidades || []);
