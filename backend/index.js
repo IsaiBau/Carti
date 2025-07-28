@@ -85,8 +85,8 @@ const sslOptions = {
 };
 
 // Iniciar servidor HTTPS (TLS)
-https.createServer(sslOptions, app).listen(443, () => {
-    console.log('Servidor HTTPS (TLS) corriendo en puerto 443');
+https.createServer(sslOptions, app).listen(5000, () => {
+    console.log('Servidor HTTPS (TLS) corriendo en puerto 5000');
 });
 
 // (Opcional) Redireccionar HTTP a HTTPS
